@@ -1,11 +1,12 @@
 package com.kaneras.chess.logic;
 
+import com.kaneras.chess.graphics.ImageHelper;
 import javafx.scene.image.Image;
 
 public class ChessPiece {
     private int x, y;
     private final PieceType type;
-    private final Image sprite;
+    private Image sprite;
     private final boolean isWhite;
 
     public ChessPiece(int x, int y, PieceType type, boolean isWhite) {
@@ -13,7 +14,7 @@ public class ChessPiece {
         this.y = y;
         this.type = type;
         this.isWhite = isWhite;
-        this.sprite = new Image(ChessPiece.class.getResourceAsStream("resources/" + type.toString().toLowerCase() + ".png"));
+        this.sprite = ImageHelper.loadImage(type.toString().toLowerCase() + (isWhite ? "_white" : ""));
     }
 
     public Image getSprite() {

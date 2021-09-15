@@ -27,6 +27,10 @@ public class GridTile {
         this.piece = piece;
     }
 
+    public ChessPiece getPiece() {
+        return piece;
+    }
+
     public boolean isWhiteBackground() {
         return isWhiteBackground;
     }

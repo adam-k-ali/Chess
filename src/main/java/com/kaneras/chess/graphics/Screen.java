@@ -23,10 +23,16 @@ public class Screen {
     }
 
     private static void drawGridTile(GridTile tile) {
+        int px = tile.getX() * getTileSize();
+        int py = tile.getY() * getTileSize();
         if (!tile.isWhiteBackground()) {
             graphics.setFill(Color.BLACK);
-            graphics.fillRect(tile.getX() * getTileSize(), tile.getY() * getTileSize(), getTileSize(), getTileSize());
+            graphics.fillRect(px, py, getTileSize(), getTileSize());
         }
+
+        if (tile.getPiece() != null)
+            ImageHelper.drawImage(graphics, tile.getPiece().getSprite(), px, py, getTileSize(), getTileSize());
+
     }
 
     private static int getTileSize() {

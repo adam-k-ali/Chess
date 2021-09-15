@@ -17,7 +17,7 @@ public class Main extends Application {
 
         VBox layout = new VBox();
         layout.getChildren().addAll(Game.getCanvas());
-        Scene scene = new Scene(layout, Properties.MIN_WIDTH, Properties.MIN_HEIGHT);
+        Scene scene = new Scene(layout, Properties.StaticProperties.MIN_WIDTH, Properties.StaticProperties.MIN_HEIGHT);
         stage.setScene(scene);
         stage.show();
     }
