@@ -1,6 +1,7 @@
 package com.kaneras.chess.logic;
 
 import com.kaneras.chess.Properties;
+import com.kaneras.chess.graphics.Screen;
 import javafx.scene.canvas.Canvas;
 
 import java.awt.*;
@@ -10,10 +11,13 @@ public class Game {
     private static Canvas canvas;
     private static GridTile[][] grid = new GridTile[8][8];
     private static HashMap<Point, ChessPiece> pieces = new HashMap<>();
+    private static int selectedX = -1;
+    private static int selectedY = -1;
 
     public static void init() {
         canvas = new Canvas(Properties.DynamicProperties.canvasWidth, Properties.DynamicProperties.canvasHeight);
         canvas.setFocusTraversable(true);
+        canvas.setOnMouseClicked(InputHandler::handleMouseClick);
 
         setupGrid();
     }
@@ -52,6 +56,32 @@ public class Game {
         grid[4][7].setChessPiece(new ChessPiece(4, 7, ChessPiece.PieceType.QUEEN, true));
     }
 
+    /**
+     * Selects a game tile
+     * Can't select a tile with no game piece on it.
+     * @param x The x position of the tile to select
+     * @param y The y position of the tile to select
+     */
+    public static void selectTile(int x, int y) {
+        if (getTile(x, y).getPiece() == null)
+            return;
+        selectedX = x;
+        selectedY = y;
+        Screen.refresh();
+    }
+
+    public static void deselectTile() {
+        selectedX = -1;
+        selectedY = -1;
+        Screen.refresh();
+    }
+
+    public static boolean isSelected(int x, int y) {
+        if (selectedX == -1 || selectedY == -1)
+            return false;
+        return selectedX == x && selectedY == y;
+    }
+
     public static Canvas getCanvas() {
         return canvas;
     }
@@ -59,5 +89,10 @@ public class Game {
     public static GridTile getTile(int x, int y) {
         return grid[x][y];
     }
+
+    public static int getTileSize() {
+        return (int) (Game.getCanvas().getWidth() / 8);
+    }
+
 
 }
