@@ -11,4 +11,8 @@ public class InputHandler {
             Game.deselectTile();
         }
     }
+
+    public static void handleMouseMove(MouseEvent event) {
+        Game.moveHover((int) event.getX() / Game.getTileSize(), (int) event.getY() / Game.getTileSize());
+    }
 }

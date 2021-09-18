@@ -4,14 +4,11 @@ import com.kaneras.chess.graphics.ImageHelper;
 import javafx.scene.image.Image;
 
 public class ChessPiece {
-    private int x, y;
     private final PieceType type;
     private Image sprite;
     private final boolean isWhite;
 
-    public ChessPiece(int x, int y, PieceType type, boolean isWhite) {
-        this.x = x;
-        this.y = y;
+    public ChessPiece(PieceType type, boolean isWhite) {
         this.type = type;
         this.isWhite = isWhite;
         this.sprite = ImageHelper.loadImage(type.toString().toLowerCase() + (isWhite ? "_white" : ""));
@@ -21,18 +18,12 @@ public class ChessPiece {
         return sprite;
     }
 
-    public void move(int x, int y) {
-        // TODO: Make sure move is legal.
-        this.x = x;
-        this.y = y;
+    public PieceType getType() {
+        return type;
     }
 
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
+    public boolean isWhite() {
+        return isWhite;
     }
 
     public enum PieceType {

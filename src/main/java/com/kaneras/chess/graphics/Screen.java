@@ -2,6 +2,7 @@ package com.kaneras.chess.graphics;
 
 import com.kaneras.chess.logic.Game;
 import com.kaneras.chess.logic.GridTile;
+import com.kaneras.chess.logic.move.*;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 
@@ -40,6 +41,51 @@ public class Screen {
 
         if (Game.isSelected(tile.getX(), tile.getY())) {
             graphics.setFill(Color.BLUE);
+            graphics.setGlobalAlpha(0.2);
+            graphics.fillRect(px, py, Game.getTileSize(), Game.getTileSize());
+            graphics.setGlobalAlpha(1.0);
+        } else if (Game.isHoveredOver(tile.getX(), tile.getY())) {
+            graphics.setFill(Color.RED);
+
+            if (Game.getSelectedTile() != null) {
+                int startX = Game.getSelectedTile().getX();
+                int startY = Game.getSelectedTile().getY();
+                int finishX = Game.getHoveredTile().getX();
+                int finishY = Game.getHoveredTile().getY();
+                switch (Game.getSelectedTile().getPiece().getType()) {
+                    case KING:
+                        if (new KingMoveHelper(startX, startY, finishX, finishY).isValidMove()) {
+                            graphics.setFill(Color.GREEN);
+                        }
+                        break;
+                    case QUEEN:
+                        if (new QueenMoveHelper(startX, startY, finishX, finishY).isValidMove()) {
+                            graphics.setFill(Color.GREEN);
+                        }
+                        break;
+                    case BISHOP:
+                        if (new BishopMoveHelper(startX, startY, finishX, finishY).isValidMove()) {
+                            graphics.setFill(Color.GREEN);
+                        }
+                        break;
+                    case PAWN:
+                        if (new PawnMoveHelper(startX, startY, finishX, finishY).isValidMove()) {
+                            graphics.setFill(Color.GREEN);
+                        }
+                        break;
+                    case ROOK:
+                        if (new RookMoveHelper(startX, startY, finishX, finishY).isValidMove()) {
+                            graphics.setFill(Color.GREEN);
+                        }
+                        break;
+                    case KNIGHT:
+                        if (new KnightMoveHelper(startX, startY, finishX, finishY).isValidMove()) {
+                            graphics.setFill(Color.GREEN);
+                        }
+                        break;
+                }
+            }
+
             graphics.setGlobalAlpha(0.2);
             graphics.fillRect(px, py, Game.getTileSize(), Game.getTileSize());
             graphics.setGlobalAlpha(1.0);

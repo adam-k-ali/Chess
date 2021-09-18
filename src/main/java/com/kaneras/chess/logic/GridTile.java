@@ -5,7 +5,6 @@ public class GridTile {
     private final boolean isWhiteBackground;
     private final int x, y;
     private ChessPiece piece;
-    private boolean selected = false;
 
     public GridTile(int x, int y, boolean isWhiteBackground) {
         this.x = x;
