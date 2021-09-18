@@ -1,6 +1,7 @@
 package com.kaneras.chess.logic;
 
 import com.kaneras.chess.Properties;
+import com.kaneras.chess.graphics.AlertBox;
 import com.kaneras.chess.graphics.Screen;
 import com.kaneras.chess.logic.move.*;
 import javafx.scene.canvas.Canvas;
@@ -184,6 +185,11 @@ public class Game {
 
         ChessPiece piece = Game.getSelectedTile().getPiece();
         Game.getSelectedTile().setChessPiece(null);
+        if (Game.getTile(destX, destY).getPiece() != null && Game.getTile(destX, destY).getPiece().getType() == ChessPiece.PieceType.KING) {
+            // win
+            AlertBox.showAlert("Game Over", getCurrentPlayer() + " wins!");
+            return;
+        }
         Game.getTile(destX, destY).setChessPiece(piece);
         Game.deselectTile();
         Game.toggleCurrentPlayer();
