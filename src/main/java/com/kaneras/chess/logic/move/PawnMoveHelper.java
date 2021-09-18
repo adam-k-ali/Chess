@@ -1,5 +1,7 @@
 package com.kaneras.chess.logic.move;
 
+import com.kaneras.chess.logic.Game;
+
 //TODO: Pawn Promotion
 public class PawnMoveHelper extends MoveHelper {
 
@@ -10,7 +12,7 @@ public class PawnMoveHelper extends MoveHelper {
     @Override
     public boolean isValidMove() {
         // On the first move, a pawn can move 2 spaces forward.
-        if ((startPiece.isWhite() && startY == 6 || !startPiece.isWhite() && startY == 1) && movedNForward(2)) {
+        if ((startPiece.getOwner() == Game.Player.WHITE && startY == 6 || startPiece.getOwner() == Game.Player.BLACK && startY == 1) && movedNForward(2)) {
             return true;
         }
 

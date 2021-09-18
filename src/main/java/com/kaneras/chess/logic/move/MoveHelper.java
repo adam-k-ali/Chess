@@ -42,7 +42,7 @@ public abstract class MoveHelper {
 
     protected boolean movedNForward(int n) {
         ChessPiece piece = Game.getTile(startX, startY).getPiece();
-        return !piece.isWhite() && finishY - startY == n || piece.isWhite() && finishY - startY == -n;
+        return piece.getOwner() == Game.Player.BLACK && finishY - startY == n || piece.getOwner() == Game.Player.WHITE && finishY - startY == -n;
     }
 
     protected boolean movedNHorizontal(int n) {
@@ -93,10 +93,10 @@ public abstract class MoveHelper {
         if (startPiece == null && finishPiece != null)
             return true;
 
-        if (startPiece.isWhite() && !finishPiece.isWhite())
+        if (startPiece.getOwner() == Game.Player.WHITE && finishPiece.getOwner() == Game.Player.BLACK)
             return true;
 
-        return !startPiece.isWhite() && finishPiece.isWhite();
+        return startPiece.getOwner() == Game.Player.BLACK && finishPiece.getOwner() == Game.Player.WHITE;
     }
 
     /**

@@ -6,7 +6,14 @@ import javafx.scene.input.MouseEvent;
 public class InputHandler {
     public static void handleMouseClick(MouseEvent event) {
         if (event.getButton() == MouseButton.PRIMARY) {
-            Game.selectTile((int) event.getX() / Game.getTileSize(), (int) event.getY() / Game.getTileSize());
+            int x = (int) event.getX() / Game.getTileSize();
+            int y = (int) event.getY() / Game.getTileSize();
+            if (Game.getSelectedTile() != null && Game.getTile(x, y).getPiece() == null){
+
+            } else {
+                Game.selectTile(x, y);
+            }
+
         } else if (event.getButton() == MouseButton.SECONDARY) {
             Game.deselectTile();
         }

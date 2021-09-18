@@ -2,14 +2,14 @@ package com.kaneras.chess.logic;
 
 public class GridTile {
     // true for white background, false for black background
-    private final boolean isWhiteBackground;
+    private final Game.Player bias;
     private final int x, y;
     private ChessPiece piece;
 
-    public GridTile(int x, int y, boolean isWhiteBackground) {
+    public GridTile(int x, int y, Game.Player bias) {
         this.x = x;
         this.y = y;
-        this.isWhiteBackground = isWhiteBackground;
+        this.bias = bias;
     }
 
     public int getX() {
@@ -31,7 +31,11 @@ public class GridTile {
         return piece;
     }
 
-    public boolean isWhiteBackground() {
-        return isWhiteBackground;
+    /**
+     * Get the background colour of the tile
+     * @return WHITE, BLACK
+     */
+    public Game.Player getBias() {
+        return bias;
     }
 }

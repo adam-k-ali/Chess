@@ -17,6 +17,8 @@ public class Game {
     private static int currHovX = -1;
     private static int currHovY = -1;
 
+    private static Player player;
+
     public static void init() {
         canvas = new Canvas(Properties.DynamicProperties.canvasWidth, Properties.DynamicProperties.canvasHeight);
         canvas.setFocusTraversable(true);
@@ -50,7 +52,11 @@ public class Game {
         // Draw Tiles
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
-                grid[x][y] = new GridTile(x, y, y % 2 == 0 ? x % 2 == 0 : x % 2 == 1);
+                if (y % 2 == 0) {
+                    grid[x][y] = new GridTile(x, y, x % 2 == 0 ? Player.WHITE : Player.BLACK);
+                } else {
+                    grid[x][y] = new GridTile(x, y, x % 2 == 0 ? Player.BLACK : Player.WHITE);
+                }
             }
         }
 
@@ -58,26 +64,28 @@ public class Game {
         // Black pieces at top of board.
         for (int y = 0; y < 8; y++) {
             if (y == 0 || y == 7) {
-                grid[0][y].setChessPiece(new ChessPiece(ChessPiece.PieceType.ROOK, y == 7));
-                grid[7][y].setChessPiece(new ChessPiece(ChessPiece.PieceType.ROOK, y == 7));
+                Player owner = y == 7 ? Player.WHITE : Player.BLACK;
+                grid[0][y].setChessPiece(new ChessPiece(ChessPiece.PieceType.ROOK, owner));
+                grid[7][y].setChessPiece(new ChessPiece(ChessPiece.PieceType.ROOK, owner));
 
-                grid[1][y].setChessPiece(new ChessPiece(ChessPiece.PieceType.KNIGHT, y == 7));
-                grid[6][y].setChessPiece(new ChessPiece(ChessPiece.PieceType.KNIGHT, y == 7));
+                grid[1][y].setChessPiece(new ChessPiece(ChessPiece.PieceType.KNIGHT, owner));
+                grid[6][y].setChessPiece(new ChessPiece(ChessPiece.PieceType.KNIGHT, owner));
 
-                grid[2][y].setChessPiece(new ChessPiece(ChessPiece.PieceType.BISHOP, y == 7));
-                grid[5][y].setChessPiece(new ChessPiece(ChessPiece.PieceType.BISHOP, y == 7));
+                grid[2][y].setChessPiece(new ChessPiece(ChessPiece.PieceType.BISHOP, owner));
+                grid[5][y].setChessPiece(new ChessPiece(ChessPiece.PieceType.BISHOP, owner));
             } else if (y == 1 || y == 6) {
+                Player owner = y == 6 ? Player.WHITE : Player.BLACK;
                 for (int x = 0; x < 8; x++) {
-                    grid[x][y].setChessPiece(new ChessPiece(ChessPiece.PieceType.PAWN, y == 6));
+                    grid[x][y].setChessPiece(new ChessPiece(ChessPiece.PieceType.PAWN, owner));
                 }
             }
         }
 
         // Place king and queen pieces
-        grid[3][0].setChessPiece(new ChessPiece(ChessPiece.PieceType.QUEEN, false));
-        grid[4][0].setChessPiece(new ChessPiece(ChessPiece.PieceType.KING, false));
-        grid[3][7].setChessPiece(new ChessPiece(ChessPiece.PieceType.KING, true));
-        grid[4][7].setChessPiece(new ChessPiece(ChessPiece.PieceType.QUEEN, true));
+        grid[3][0].setChessPiece(new ChessPiece(ChessPiece.PieceType.QUEEN, Player.BLACK));
+        grid[4][0].setChessPiece(new ChessPiece(ChessPiece.PieceType.KING, Player.BLACK));
+        grid[3][7].setChessPiece(new ChessPiece(ChessPiece.PieceType.KING, Player.WHITE));
+        grid[4][7].setChessPiece(new ChessPiece(ChessPiece.PieceType.QUEEN, Player.WHITE));
     }
 
     /**
@@ -134,5 +142,15 @@ public class Game {
         return (int) (Game.getCanvas().getWidth() / 8);
     }
 
+    public static void setPlayer(Player player) {
+        Game.player = player;
+    }
 
+    public static Player getPlayer() {
+        return player;
+    }
+
+    public enum Player {
+        WHITE, BLACK;
+    }
 }

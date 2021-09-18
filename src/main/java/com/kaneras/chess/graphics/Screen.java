@@ -31,7 +31,7 @@ public class Screen {
     private static void drawGridTile(GridTile tile) {
         int px = tile.getX() * Game.getTileSize();
         int py = tile.getY() * Game.getTileSize();
-        if (!tile.isWhiteBackground()) {
+        if (tile.getBias() == Game.Player.BLACK) {
             graphics.setFill(Color.BLACK);
             graphics.fillRect(px, py, Game.getTileSize(), Game.getTileSize());
         }
