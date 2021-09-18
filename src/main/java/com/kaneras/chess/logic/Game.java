@@ -4,7 +4,6 @@ import com.kaneras.chess.Properties;
 import com.kaneras.chess.graphics.Screen;
 import com.kaneras.chess.logic.move.*;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.paint.Color;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -19,13 +18,15 @@ public class Game {
     private static int currHovX = -1;
     private static int currHovY = -1;
 
-    private static Player player;
+    private static Player currentPlayer;
 
     public static void init() {
         canvas = new Canvas(Properties.DynamicProperties.canvasWidth, Properties.DynamicProperties.canvasHeight);
         canvas.setFocusTraversable(true);
         canvas.setOnMouseClicked(InputHandler::handleMouseClick);
         canvas.setOnMouseMoved(InputHandler::handleMouseMove);
+
+        currentPlayer = Player.WHITE;
 
         setupGrid();
     }
@@ -92,12 +93,12 @@ public class Game {
 
     /**
      * Selects a game tile
-     * Can't select a tile with no game piece on it.
+     * Can't select a tile with no game piece on it or if it is a piece belonging to the other player.
      * @param x The x position of the tile to select
      * @param y The y position of the tile to select
      */
     public static void selectTile(int x, int y) {
-        if (getTile(x, y).getPiece() == null)
+        if (getTile(x, y).getPiece() == null || getTile(x, y).getPiece().getOwner() != currentPlayer)
             return;
         selectedX = x;
         selectedY = y;
@@ -122,15 +123,6 @@ public class Game {
         return Game.getTile(selectedX, selectedY);
     }
 
-    /**
-     * Move the selected game piece to a new legal destination
-     * @param x Destination tile x position
-     * @param y Destination tile y position
-     */
-    public static void moveSelectedPiece(int x, int y) {
-
-    }
-
     public static Canvas getCanvas() {
         return canvas;
     }
@@ -143,12 +135,13 @@ public class Game {
         return (int) (Game.getCanvas().getWidth() / 8);
     }
 
-    public static void setPlayer(Player player) {
-        Game.player = player;
+    public static void toggleCurrentPlayer() {
+        Game.currentPlayer = Game.currentPlayer == Player.WHITE ? Player.BLACK : Player.WHITE;
+        Screen.refresh();
     }
 
-    public static Player getPlayer() {
-        return player;
+    public static Player getCurrentPlayer() {
+        return currentPlayer;
     }
 
     public static boolean validateMove(int startX, int startY, int finishX, int finishY) {
@@ -170,6 +163,23 @@ public class Game {
                 return new KnightMoveHelper(startX, startY, finishX, finishY).isValidMove();
         }
         return false;
+    }
+
+    /**
+     * Move the selected game piece to a new legal destination
+     * @param destX Destination tile x position
+     * @param destY Destination tile y position
+     */
+    public static void moveSelectedPiece(int destX, int destY) {
+        if (!Game.validateMove(Game.getSelectedTile().getX(), Game.getSelectedTile().getY(), destX, destY))
+            return;
+
+        ChessPiece piece = Game.getSelectedTile().getPiece();
+        Game.getSelectedTile().setChessPiece(null);
+        Game.getTile(destX, destY).setChessPiece(piece);
+        Game.deselectTile();
+        Game.toggleCurrentPlayer();
+        Screen.refresh();
     }
 
     public enum Player {

@@ -36,8 +36,9 @@ public class Screen {
             graphics.fillRect(px, py, Game.getTileSize(), Game.getTileSize());
         }
 
-        if (tile.getPiece() != null)
-            ImageHelper.drawImage(graphics, tile.getPiece().getSprite(), px, py, Game.getTileSize(), Game.getTileSize());
+        if (tile.getPiece() != null) {
+            drawPieceSprite(tile, px, py);
+        }
 
         if (Game.isSelected(tile.getX(), tile.getY())) {
             graphics.setFill(Color.BLUE);
@@ -59,6 +60,17 @@ public class Screen {
 
             graphics.setGlobalAlpha(0.2);
             graphics.fillRect(px, py, Game.getTileSize(), Game.getTileSize());
+            graphics.setGlobalAlpha(1.0);
+        }
+    }
+
+    private static void drawPieceSprite(GridTile tile, int px, int py) {
+        if (Game.getCurrentPlayer() != tile.getPiece().getOwner()) {
+            graphics.setGlobalAlpha(0.8);
+        }
+        ImageHelper.drawImage(graphics, tile.getPiece().getSprite(), px, py, Game.getTileSize(), Game.getTileSize());
+
+        if (Game.getCurrentPlayer() != tile.getPiece().getOwner()) {
             graphics.setGlobalAlpha(1.0);
         }
     }

@@ -10,17 +10,10 @@ public class InputHandler {
             int x = (int) event.getX() / Game.getTileSize();
             int y = (int) event.getY() / Game.getTileSize();
             if (Game.getSelectedTile() != null && Game.getTile(x, y).getPiece() == null){
-                if (Game.validateMove(Game.getSelectedTile().getX(), Game.getSelectedTile().getY(), x, y)) {
-                    ChessPiece piece = Game.getSelectedTile().getPiece();
-                    Game.getSelectedTile().setChessPiece(null);
-                    Game.getTile(x, y).setChessPiece(piece);
-                    Game.deselectTile();
-                    Screen.refresh();
-                }
+                Game.moveSelectedPiece(x, y);
             } else {
                 Game.selectTile(x, y);
             }
-
         } else if (event.getButton() == MouseButton.SECONDARY) {
             Game.deselectTile();
         }
