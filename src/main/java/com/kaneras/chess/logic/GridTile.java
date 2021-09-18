@@ -21,9 +21,6 @@ public class GridTile {
     }
 
     public void setChessPiece(ChessPiece piece) {
-        if (this.piece != null && piece != null) {
-            throw new IllegalArgumentException("There's already a chess piece here.");
-        }
         this.piece = piece;
     }
 

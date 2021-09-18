@@ -148,6 +148,11 @@ public class Game {
         if (Game.getSelectedTile() == null)
             return false;
 
+        if (Game.getSelectedTile().getPiece() == null) {
+            deselectTile();
+            return false;
+        }
+
         switch (Game.getSelectedTile().getPiece().getType()) {
             case KING:
                 return new KingMoveHelper(startX, startY, finishX, finishY).isValidMove();
@@ -171,6 +176,9 @@ public class Game {
      * @param destY Destination tile y position
      */
     public static void moveSelectedPiece(int destX, int destY) {
+        if (Game.getSelectedTile() == null)
+            return;
+
         if (!Game.validateMove(Game.getSelectedTile().getX(), Game.getSelectedTile().getY(), destX, destY))
             return;
 
