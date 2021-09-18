@@ -7,6 +7,6 @@ public class KnightMoveHelper extends MoveHelper {
 
     @Override
     public boolean isValidMove() {
-        return (movedNVertical(2) && movedNHorizontal(1) || movedNHorizontal(1) && movedNVertical(2)) && !moveClashes();
+        return (movedNVertical(2) && movedNHorizontal(1) || movedNVertical(1) && movedNHorizontal(2)) && !moveClashes();
     }
 }
