@@ -1,12 +1,12 @@
 package com.kaneras.chess.logic.move;
 
 public class KnightMoveHelper extends MoveHelper {
-    public KnightMoveHelper(int startX, int startY, int finishX, int finishY) {
-        super(startX, startY, finishX, finishY);
+    public KnightMoveHelper(int startX, int startY) {
+        super(startX, startY);
     }
 
     @Override
-    public boolean isValidMove() {
-        return (movedNVertical(2) && movedNHorizontal(1) || movedNVertical(1) && movedNHorizontal(2)) && !moveClashes();
+    public boolean isValidMove(int destX, int destY) {
+        return (movedNVertical(2, destY) && movedNHorizontal(1, destX) || movedNVertical(1, destY) && movedNHorizontal(2, destX)) && !moveClashes(destX, destY);
     }
 }

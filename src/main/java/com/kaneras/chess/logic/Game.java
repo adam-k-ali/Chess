@@ -146,29 +146,37 @@ public class Game {
     }
 
     public static boolean validateMove(int startX, int startY, int finishX, int finishY) {
-        if (Game.getSelectedTile() == null)
-            return false;
+        GridTile startTile = Game.getTile(startX, startY);
 
-        if (Game.getSelectedTile().getPiece() == null) {
-            deselectTile();
+        if (startTile.getPiece() == null) {
             return false;
         }
 
-        switch (Game.getSelectedTile().getPiece().getType()) {
-            case KING:
-                return new KingMoveHelper(startX, startY, finishX, finishY).isValidMove();
-            case QUEEN:
-                return new QueenMoveHelper(startX, startY, finishX, finishY).isValidMove();
-            case BISHOP:
-                return new BishopMoveHelper(startX, startY, finishX, finishY).isValidMove();
-            case PAWN:
-                return new PawnMoveHelper(startX, startY, finishX, finishY).isValidMove();
-            case ROOK:
-                return new RookMoveHelper(startX, startY, finishX, finishY).isValidMove();
-            case KNIGHT:
-                return new KnightMoveHelper(startX, startY, finishX, finishY).isValidMove();
+        MoveHelper moveHelper = createMoveHelper(Game.getTile(startX, startY));
+        if (moveHelper != null) {
+            return moveHelper.isValidMove(finishX, finishY);
         }
+
         return false;
+    }
+
+    public static MoveHelper createMoveHelper(GridTile tile) {
+        switch (tile.getPiece().getType()) {
+            case KING:
+                return new KingMoveHelper(tile.getX(), tile.getY());
+            case QUEEN:
+                return new QueenMoveHelper(tile.getX(), tile.getY());
+            case BISHOP:
+                return new BishopMoveHelper(tile.getX(), tile.getY());
+            case PAWN:
+                return new PawnMoveHelper(tile.getX(), tile.getY());
+            case ROOK:
+                return new RookMoveHelper(tile.getX(), tile.getY());
+            case KNIGHT:
+                return new KnightMoveHelper(tile.getX(), tile.getY());
+            default:
+                return null;
+        }
     }
 
     /**
@@ -187,13 +195,50 @@ public class Game {
         Game.getSelectedTile().setChessPiece(null);
         if (Game.getTile(destX, destY).getPiece() != null && Game.getTile(destX, destY).getPiece().getType() == ChessPiece.PieceType.KING) {
             // win
-            AlertBox.showAlert("Game Over", getCurrentPlayer() + " wins!");
+            AlertBox.showAlert("Game Over", "Checkmate by " + getCurrentPlayer());
             return;
         }
         Game.getTile(destX, destY).setChessPiece(piece);
+
+        if (getCurrentPlayer() == Player.BLACK) {
+            Point whiteKing = getWhiteKing();
+            if (whiteKing != null && createMoveHelper(Game.getTile(destX, destY)).isValidMove(whiteKing.x, whiteKing.y)) {
+                System.out.println("Check");
+            }
+        } else if (getCurrentPlayer() == Player.WHITE) {
+            Point blackKing = getBlackKing();
+            if (blackKing != null && createMoveHelper(Game.getTile(destX, destY)).isValidMove(blackKing.x, blackKing.y)) {
+                System.out.println("Check");
+            }
+        }
+
         Game.deselectTile();
         Game.toggleCurrentPlayer();
         Screen.refresh();
+    }
+
+    private static Point getBlackKing() {
+        for (int x = 0; x < 7; x++) {
+            for (int y = 0; y < 7; y++) {
+                ChessPiece piece = Game.getTile(x, y).getPiece();
+                if (piece != null && piece.getOwner() == Player.BLACK && piece.getType() == ChessPiece.PieceType.KING) {
+                    return new Point(x, y);
+                }
+            }
+        }
+        return null;
+    }
+
+    private static Point getWhiteKing() {
+        for (int x = 0; x < 7; x++) {
+            for (int y = 0; y < 7; y++) {
+                ChessPiece piece = Game.getTile(x, y).getPiece();
+                if (piece != null && piece.getOwner() == Player.WHITE && piece.getType() == ChessPiece.PieceType.KING) {
+                    return new Point(x, y);
+                }
+            }
+        }
+        return null;
     }
 
     public enum Player {

@@ -1,12 +1,12 @@
 package com.kaneras.chess.logic.move;
 
 public class KingMoveHelper extends MoveHelper {
-    public KingMoveHelper(int startX, int startY, int finishX, int finishY) {
-        super(startX, startY, finishX, finishY);
+    public KingMoveHelper(int startX, int startY) {
+        super(startX, startY);
     }
 
     @Override
-    public boolean isValidMove() {
-        return getDistanceMoved() == 1 && oppositeTeams();
+    public boolean isValidMove(int destX, int destY) {
+        return getDistanceMoved(destX, destY) == 1 && oppositeTeams(destX, destY);
     }
 }

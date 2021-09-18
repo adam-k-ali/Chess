@@ -1,16 +1,16 @@
 package com.kaneras.chess.logic.move;
 
 public class BishopMoveHelper extends MoveHelper {
-    public BishopMoveHelper(int startX, int startY, int finishX, int finishY) {
-        super(startX, startY, finishX, finishY);
+    public BishopMoveHelper(int startX, int startY) {
+        super(startX, startY);
     }
 
     @Override
-    public boolean isValidMove() {
-        return isMoveDiagonal() && !isPathObstructed();
+    public boolean isValidMove(int destX, int destY) {
+        return isMoveDiagonal(destX, destY) && !isPathObstructed(destX, destY);
     }
 
-    private boolean isPathObstructed() {
-        return diagonalObstruction();
+    private boolean isPathObstructed(int destX, int destY) {
+        return diagonalObstruction(destX, destY);
     }
 }
