@@ -2,7 +2,9 @@ package com.kaneras.chess.logic;
 
 import com.kaneras.chess.Properties;
 import com.kaneras.chess.graphics.Screen;
+import com.kaneras.chess.logic.move.*;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.paint.Color;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -99,7 +101,6 @@ public class Game {
             return;
         selectedX = x;
         selectedY = y;
-        System.out.println(getTile(x,y).getPiece().getType());
         Screen.refresh();
     }
 
@@ -148,6 +149,27 @@ public class Game {
 
     public static Player getPlayer() {
         return player;
+    }
+
+    public static boolean validateMove(int startX, int startY, int finishX, int finishY) {
+        if (Game.getSelectedTile() == null)
+            return false;
+
+        switch (Game.getSelectedTile().getPiece().getType()) {
+            case KING:
+                return new KingMoveHelper(startX, startY, finishX, finishY).isValidMove();
+            case QUEEN:
+                return new QueenMoveHelper(startX, startY, finishX, finishY).isValidMove();
+            case BISHOP:
+                return new BishopMoveHelper(startX, startY, finishX, finishY).isValidMove();
+            case PAWN:
+                return new PawnMoveHelper(startX, startY, finishX, finishY).isValidMove();
+            case ROOK:
+                return new RookMoveHelper(startX, startY, finishX, finishY).isValidMove();
+            case KNIGHT:
+                return new KnightMoveHelper(startX, startY, finishX, finishY).isValidMove();
+        }
+        return false;
     }
 
     public enum Player {

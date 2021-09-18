@@ -27,9 +27,8 @@ public class PawnMoveHelper extends MoveHelper {
             if (isMoveDiagonal() || moveClashes()) {
                 return false;
             }
-            if (finishTile.getPiece() == null) {
-                return true;
-            }
+
+            return finishTile.getPiece() == null;
         }
 
         return false;

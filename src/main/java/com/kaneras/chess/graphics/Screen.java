@@ -52,37 +52,8 @@ public class Screen {
                 int startY = Game.getSelectedTile().getY();
                 int finishX = Game.getHoveredTile().getX();
                 int finishY = Game.getHoveredTile().getY();
-                switch (Game.getSelectedTile().getPiece().getType()) {
-                    case KING:
-                        if (new KingMoveHelper(startX, startY, finishX, finishY).isValidMove()) {
-                            graphics.setFill(Color.GREEN);
-                        }
-                        break;
-                    case QUEEN:
-                        if (new QueenMoveHelper(startX, startY, finishX, finishY).isValidMove()) {
-                            graphics.setFill(Color.GREEN);
-                        }
-                        break;
-                    case BISHOP:
-                        if (new BishopMoveHelper(startX, startY, finishX, finishY).isValidMove()) {
-                            graphics.setFill(Color.GREEN);
-                        }
-                        break;
-                    case PAWN:
-                        if (new PawnMoveHelper(startX, startY, finishX, finishY).isValidMove()) {
-                            graphics.setFill(Color.GREEN);
-                        }
-                        break;
-                    case ROOK:
-                        if (new RookMoveHelper(startX, startY, finishX, finishY).isValidMove()) {
-                            graphics.setFill(Color.GREEN);
-                        }
-                        break;
-                    case KNIGHT:
-                        if (new KnightMoveHelper(startX, startY, finishX, finishY).isValidMove()) {
-                            graphics.setFill(Color.GREEN);
-                        }
-                        break;
+                if (Game.validateMove(startX, startY, finishX, finishY)) {
+                    graphics.setFill(Color.GREEN);
                 }
             }
 
