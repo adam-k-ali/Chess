@@ -203,12 +203,12 @@ public class Game {
         if (getCurrentPlayer() == Player.BLACK) {
             Point whiteKing = getWhiteKing();
             if (whiteKing != null && createMoveHelper(Game.getTile(destX, destY)).isValidMove(whiteKing.x, whiteKing.y)) {
-                System.out.println("Check");
+                AlertBox.showAlert("Alert", "Black player calls \"Check!\"");
             }
         } else if (getCurrentPlayer() == Player.WHITE) {
             Point blackKing = getBlackKing();
             if (blackKing != null && createMoveHelper(Game.getTile(destX, destY)).isValidMove(blackKing.x, blackKing.y)) {
-                System.out.println("Check");
+                AlertBox.showAlert("Alert", "White player calls \"Check!\"");
             }
         }
 
