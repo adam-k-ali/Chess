@@ -2,6 +2,7 @@ package com.kaneras.chess.logic;
 
 import com.kaneras.chess.Properties;
 import com.kaneras.chess.graphics.AlertBox;
+import com.kaneras.chess.graphics.PawnPromotionOptionBox;
 import com.kaneras.chess.graphics.Screen;
 import com.kaneras.chess.logic.move.*;
 import javafx.scene.canvas.Canvas;
@@ -210,6 +211,10 @@ public class Game {
             if (blackKing != null && createMoveHelper(Game.getTile(destX, destY)).isValidMove(blackKing.x, blackKing.y)) {
                 AlertBox.showAlert("Alert", "White player calls \"Check!\"");
             }
+        }
+
+        if (piece.getType() == ChessPiece.PieceType.PAWN && destY % 7 == 0) {
+            Game.getTile(destX, destY).setChessPiece(new ChessPiece(PawnPromotionOptionBox.chooseOption(), getCurrentPlayer()));
         }
 
         Game.deselectTile();
