@@ -6,8 +6,8 @@ import com.kaneras.chess.logic.element.ChessPiece;
 import com.kaneras.chess.logic.element.GridTile;
 import javafx.scene.canvas.Canvas;
 
-import java.awt.*;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The class that handles all the main logic throughout the chess game.
@@ -190,7 +190,7 @@ public class Game {
      * Switch current player.
      */
     public static void toggleCurrentPlayer() {
-        Game.currentPlayer = Game.currentPlayer == Player.WHITE ? Player.BLACK : Player.WHITE;
+        Game.currentPlayer = Game.currentPlayer.other();
         Screen.refresh();
     }
 
@@ -202,7 +202,23 @@ public class Game {
         return currentPlayer;
     }
 
+    public static List<ChessPiece> getPlayerPieces(Player player) {
+        List<ChessPiece> pieces = new ArrayList<>();
+        for (int x = 0; x < 7; x++) {
+            for (int y = 0; y < 7; y++) {
+                if (grid[x][y].getPiece() != null && grid[x][y].getPiece().getOwner() == player) {
+                    pieces.add(grid[x][y].getPiece());
+                }
+            }
+        }
+        return pieces;
+    }
+
     public enum Player {
         WHITE, BLACK;
+
+        public Player other() {
+            return this == WHITE ? BLACK : WHITE;
+        }
     }
 }
