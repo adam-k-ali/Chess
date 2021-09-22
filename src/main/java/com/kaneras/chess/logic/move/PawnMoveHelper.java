@@ -1,15 +1,27 @@
 package com.kaneras.chess.logic.move;
 
-import com.kaneras.chess.logic.ChessPiece;
 import com.kaneras.chess.logic.Game;
 
-//TODO: Pawn Promotion
+/**
+ * Helper class for moves of pawns
+ */
 public class PawnMoveHelper extends MoveHelper {
 
+    /**
+     * Create a helper object for a move of a pawn
+     * @param startX The start x position on the grid for the move
+     * @param startY The start y position on the grid for the move
+     */
     public PawnMoveHelper(int startX, int startY) {
         super(startX, startY);
     }
 
+    /**
+     * Check if a move is legal
+     * @param destX The destination x position
+     * @param destY The destination y position
+     * @return true if the move is legal; false otherwise
+     */
     @Override
     public boolean isValidMove(int destX, int destY) {
         // On the first move, a pawn can move 2 spaces forward.
@@ -35,6 +47,10 @@ public class PawnMoveHelper extends MoveHelper {
         return false;
     }
 
+    /**
+     * Checks if the pawn is in its starting position
+     * @return true if the pawn is at the start; false otherwise
+     */
     private boolean isAtStart() {
         return startPiece.getOwner() == Game.Player.WHITE && startY == 6 || startPiece.getOwner() == Game.Player.BLACK && startY == 1;
     }

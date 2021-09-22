@@ -1,6 +1,6 @@
-package com.kaneras.chess.graphics;
+package com.kaneras.chess.graphics.stages;
 
-import com.kaneras.chess.logic.ChessPiece;
+import com.kaneras.chess.logic.element.ChessPiece;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -13,7 +13,15 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+/**
+ * To display an option box for all the options for pawn promotion
+ */
 public class PawnPromotionOptionBox {
+
+    /**
+     * Gives the player the list of resulting PieceTypes for pawn promotion
+     * @return The PieceType chosen.
+     */
     public static ChessPiece.PieceType chooseOption() {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);

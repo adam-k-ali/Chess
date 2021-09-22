@@ -1,19 +1,20 @@
 package com.kaneras.chess.logic;
 
 import com.kaneras.chess.Properties;
-import com.kaneras.chess.graphics.AlertBox;
-import com.kaneras.chess.graphics.PawnPromotionOptionBox;
 import com.kaneras.chess.graphics.Screen;
-import com.kaneras.chess.logic.move.*;
+import com.kaneras.chess.logic.element.ChessPiece;
+import com.kaneras.chess.logic.element.GridTile;
 import javafx.scene.canvas.Canvas;
 
 import java.awt.*;
 import java.util.HashMap;
 
+/**
+ * The class that handles all the main logic throughout the chess game.
+ */
 public class Game {
     private static Canvas canvas;
     private static GridTile[][] grid = new GridTile[8][8];
-    private static HashMap<Point, ChessPiece> pieces = new HashMap<>();
     private static int selectedX = -1;
     private static int selectedY = -1;
 
@@ -22,6 +23,9 @@ public class Game {
 
     private static Player currentPlayer;
 
+    /**
+     * Create canvas, setup grid and set the first player to be WHITE.
+     */
     public static void init() {
         canvas = new Canvas(Properties.DynamicProperties.canvasWidth, Properties.DynamicProperties.canvasHeight);
         canvas.setFocusTraversable(true);
@@ -33,6 +37,11 @@ public class Game {
         setupGrid();
     }
 
+    /**
+     * Change the tile that's hovered over with the mouse.
+     * @param x The hovered tile's x position
+     * @param y The hovered tile's y position.
+     */
     public static void moveHover(int x, int y) {
         if (currHovX != x || currHovY != y) {
             currHovX = x;
@@ -41,10 +50,20 @@ public class Game {
         }
     }
 
+    /**
+     * Check if a specific tile is hovered over by the mouse.
+     * @param x The tile's x position
+     * @param y The tile's y position
+     * @return true if the mouse is over the tile; false otherwise.
+     */
     public static boolean isHoveredOver(int x, int y) {
         return currHovX == x && currHovY == y;
     }
 
+    /**
+     * Get the tile that the mouse is hovering over.
+     * @return A GridTile object of the tile being hovered over; null if the mouse is not over a tile.
+     */
     public static GridTile getHoveredTile() {
         if (currHovX >= 0 && currHovX <= 7 && currHovY >= 0 && currHovY <= 7) {
             return Game.getTile(currHovX, currHovY);
@@ -53,6 +72,9 @@ public class Game {
         }
     }
 
+    /**
+     * Setup the grid with all the GridTiles and place all the pieces in their starting position.
+     */
     private static void setupGrid() {
         // Draw Tiles
         for (int x = 0; x < 8; x++) {
@@ -107,143 +129,77 @@ public class Game {
         Screen.refresh();
     }
 
+    /**
+     * Deselect the tile that is selected.
+     */
     public static void deselectTile() {
         selectedX = -1;
         selectedY = -1;
         Screen.refresh();
     }
 
+    /**
+     * Check if a given tile is selected.
+     * @param x The tile's x position
+     * @param y The tile's y position
+     * @return true if the given tile is selected; false otherwise.
+     */
     public static boolean isSelected(int x, int y) {
         if (selectedX == -1 || selectedY == -1)
             return false;
         return selectedX == x && selectedY == y;
     }
 
+    /**
+     * Get the tile that's selected
+     * @return A GridTile object of the selected tile.
+     */
     public static GridTile getSelectedTile() {
         if (selectedX == -1 || selectedY == -1)
             return null;
         return Game.getTile(selectedX, selectedY);
     }
 
+    /**
+     * Get the canvas to draw to
+     * @return Canvas to draw to
+     */
     public static Canvas getCanvas() {
         return canvas;
     }
 
+    /**
+     * Get a tile at a certain position
+     * @param x The tile's x position
+     * @param y The tile's y position
+     * @return A GridTile object that's at position (x,y)  on the grid.
+     */
     public static GridTile getTile(int x, int y) {
         return grid[x][y];
     }
 
+    /**
+     * Get the appropriate tile size given the canvas width.
+     * @return The size of any tile.
+     */
     public static int getTileSize() {
         return (int) (Game.getCanvas().getWidth() / 8);
     }
 
+    /**
+     * Switch current player.
+     */
     public static void toggleCurrentPlayer() {
         Game.currentPlayer = Game.currentPlayer == Player.WHITE ? Player.BLACK : Player.WHITE;
         Screen.refresh();
     }
 
+    /**
+     * Getter for the current player
+     * @return The current player; WHITE or BLACK.
+     */
     public static Player getCurrentPlayer() {
         return currentPlayer;
-    }
-
-    public static boolean validateMove(int startX, int startY, int finishX, int finishY) {
-        GridTile startTile = Game.getTile(startX, startY);
-
-        if (startTile.getPiece() == null) {
-            return false;
-        }
-
-        MoveHelper moveHelper = createMoveHelper(Game.getTile(startX, startY));
-        if (moveHelper != null) {
-            return moveHelper.isValidMove(finishX, finishY);
-        }
-
-        return false;
-    }
-
-    public static MoveHelper createMoveHelper(GridTile tile) {
-        switch (tile.getPiece().getType()) {
-            case KING:
-                return new KingMoveHelper(tile.getX(), tile.getY());
-            case QUEEN:
-                return new QueenMoveHelper(tile.getX(), tile.getY());
-            case BISHOP:
-                return new BishopMoveHelper(tile.getX(), tile.getY());
-            case PAWN:
-                return new PawnMoveHelper(tile.getX(), tile.getY());
-            case ROOK:
-                return new RookMoveHelper(tile.getX(), tile.getY());
-            case KNIGHT:
-                return new KnightMoveHelper(tile.getX(), tile.getY());
-            default:
-                return null;
-        }
-    }
-
-    /**
-     * Move the selected game piece to a new legal destination
-     * @param destX Destination tile x position
-     * @param destY Destination tile y position
-     */
-    public static void moveSelectedPiece(int destX, int destY) {
-        if (Game.getSelectedTile() == null)
-            return;
-
-        if (!Game.validateMove(Game.getSelectedTile().getX(), Game.getSelectedTile().getY(), destX, destY))
-            return;
-
-        ChessPiece piece = Game.getSelectedTile().getPiece();
-        Game.getSelectedTile().setChessPiece(null);
-        if (Game.getTile(destX, destY).getPiece() != null && Game.getTile(destX, destY).getPiece().getType() == ChessPiece.PieceType.KING) {
-            // win
-            AlertBox.showAlert("Game Over", "Checkmate by " + getCurrentPlayer());
-            return;
-        }
-        Game.getTile(destX, destY).setChessPiece(piece);
-
-        if (getCurrentPlayer() == Player.BLACK) {
-            Point whiteKing = getWhiteKing();
-            if (whiteKing != null && createMoveHelper(Game.getTile(destX, destY)).isValidMove(whiteKing.x, whiteKing.y)) {
-                AlertBox.showAlert("Alert", "Black player calls \"Check!\"");
-            }
-        } else if (getCurrentPlayer() == Player.WHITE) {
-            Point blackKing = getBlackKing();
-            if (blackKing != null && createMoveHelper(Game.getTile(destX, destY)).isValidMove(blackKing.x, blackKing.y)) {
-                AlertBox.showAlert("Alert", "White player calls \"Check!\"");
-            }
-        }
-
-        if (piece.getType() == ChessPiece.PieceType.PAWN && destY % 7 == 0) {
-            Game.getTile(destX, destY).setChessPiece(new ChessPiece(PawnPromotionOptionBox.chooseOption(), getCurrentPlayer()));
-        }
-
-        Game.deselectTile();
-        Game.toggleCurrentPlayer();
-        Screen.refresh();
-    }
-
-    private static Point getBlackKing() {
-        for (int x = 0; x < 7; x++) {
-            for (int y = 0; y < 7; y++) {
-                ChessPiece piece = Game.getTile(x, y).getPiece();
-                if (piece != null && piece.getOwner() == Player.BLACK && piece.getType() == ChessPiece.PieceType.KING) {
-                    return new Point(x, y);
-                }
-            }
-        }
-        return null;
-    }
-
-    private static Point getWhiteKing() {
-        for (int x = 0; x < 7; x++) {
-            for (int y = 0; y < 7; y++) {
-                ChessPiece piece = Game.getTile(x, y).getPiece();
-                if (piece != null && piece.getOwner() == Player.WHITE && piece.getType() == ChessPiece.PieceType.KING) {
-                    return new Point(x, y);
-                }
-            }
-        }
-        return null;
     }
 
     public enum Player {

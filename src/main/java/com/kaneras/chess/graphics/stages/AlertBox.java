@@ -1,4 +1,4 @@
-package com.kaneras.chess.graphics;
+package com.kaneras.chess.graphics.stages;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -10,6 +10,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class AlertBox {
+    /**
+     * Display an alert box
+     * @param title The title of the alert box
+     * @param message The message the alert box shows
+     */
     public static void showAlert(String title, String message) {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);

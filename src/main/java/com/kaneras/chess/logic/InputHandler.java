@@ -1,16 +1,25 @@
 package com.kaneras.chess.logic;
 
 import com.kaneras.chess.graphics.Screen;
+import com.kaneras.chess.logic.move.MoveHandler;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 
+/**
+ * A class to handle all inputs
+ */
 public class InputHandler {
+
+    /**
+     * Handle when the mouse is clicked (select or move a piece)
+     * @param event The MouseEvent
+     */
     public static void handleMouseClick(MouseEvent event) {
         if (event.getButton() == MouseButton.PRIMARY) {
             int x = (int) event.getX() / Game.getTileSize();
             int y = (int) event.getY() / Game.getTileSize();
-            if (Game.getSelectedTile() != null && canTileBeReoccupied(x, y)){
-                Game.moveSelectedPiece(x, y);
+            if (Game.getSelectedTile() != null && MoveHandler.canTileBeReoccupied(x, y)){
+                MoveHandler.moveSelectedPiece(x, y);
             } else {
                 Game.selectTile(x, y);
             }
@@ -19,12 +28,12 @@ public class InputHandler {
         }
     }
 
-    private static boolean canTileBeReoccupied(int x, int y) {
-        return Game.getTile(x, y).getPiece() == null || Game.getTile(x, y).getPiece().getOwner() != Game.getCurrentPlayer();
-    }
-
-
+    /**
+     * Handle when the mouse is moved (update hovered tile)
+     * @param event The MouseEvent
+     */
     public static void handleMouseMove(MouseEvent event) {
         Game.moveHover((int) event.getX() / Game.getTileSize(), (int) event.getY() / Game.getTileSize());
     }
+
 }
