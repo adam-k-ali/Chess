@@ -54,7 +54,7 @@ public class Screen {
 
         // Set the tile background to black if the tile should be black.
         if (tile.getBias() == Game.Player.BLACK) {
-            graphics.setFill(Color.BLACK);
+            graphics.setFill(Color.color(0.4, 0.25, 0.25));
             graphics.fillRect(px, py, Game.getTileSize(), Game.getTileSize());
         }
 
