@@ -1,6 +1,6 @@
 package com.kaneras.chess.logic;
 
-import com.kaneras.chess.graphics.Screen;
+import com.kaneras.chess.logic.move.Move;
 import com.kaneras.chess.logic.move.MoveHandler;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -19,7 +19,7 @@ public class InputHandler {
             int x = (int) event.getX() / Game.getTileSize();
             int y = (int) event.getY() / Game.getTileSize();
             if (Game.getSelectedTile() != null && MoveHandler.canTileBeReoccupied(x, y)){
-                MoveHandler.moveSelectedPiece(x, y);
+                MoveHandler.performMove(new Move(Game.getSelectedTile().getX(), Game.getSelectedTile().getY(), x, y));
             } else {
                 Game.selectTile(x, y);
             }

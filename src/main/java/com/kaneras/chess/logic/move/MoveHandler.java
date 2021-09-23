@@ -29,9 +29,9 @@ public class MoveHandler {
             return false;
         }
 
-        MoveHelper moveHelper = createMoveHelper(Game.getTile(startX, startY));
+        MoveHelper moveHelper = createMoveHelper(new Move(startX, startY, finishX, finishY));
         if (moveHelper != null) {
-            return moveHelper.isValidMove(finishX, finishY);
+            return moveHelper.isValidMove();
         }
 
         return false;
@@ -39,23 +39,23 @@ public class MoveHandler {
 
     /**
      * Create a move helper object to assist in validating moves
-     * @param tile The start tile of the move
+     * @param move The move to be checked
      * @return the move helper object
      */
-    public static MoveHelper createMoveHelper(GridTile tile) {
-        switch (tile.getPiece().getType()) {
+    public static MoveHelper createMoveHelper(Move move) {
+        switch (move.getStartTile().getPiece().getType()) {
             case KING:
-                return new KingMoveHelper(tile.getX(), tile.getY());
+                return new KingMoveHelper(move);
             case QUEEN:
-                return new QueenMoveHelper(tile.getX(), tile.getY());
+                return new QueenMoveHelper(move);
             case BISHOP:
-                return new BishopMoveHelper(tile.getX(), tile.getY());
+                return new BishopMoveHelper(move);
             case PAWN:
-                return new PawnMoveHelper(tile.getX(), tile.getY());
+                return new PawnMoveHelper(move);
             case ROOK:
-                return new RookMoveHelper(tile.getX(), tile.getY());
+                return new RookMoveHelper(move);
             case KNIGHT:
-                return new KnightMoveHelper(tile.getX(), tile.getY());
+                return new KnightMoveHelper(move);
             default:
                 return null;
         }
@@ -63,39 +63,38 @@ public class MoveHandler {
 
     /**
      * Move the selected game piece to a new legal destination
-     * @param destX Destination tile x position
-     * @param destY Destination tile y position
+     * @param move The move to be performed
      */
-    public static void moveSelectedPiece(int destX, int destY) {
+    public static void performMove(Move move) {
         if (Game.getSelectedTile() == null)
             return;
 
-        if (!validateMove(Game.getSelectedTile().getX(), Game.getSelectedTile().getY(), destX, destY))
+        if (!validateMove(move.getStartX(), move.getStartY(), move.getDestX(), move.getDestY()))
             return;
 
         ChessPiece piece = Game.getSelectedTile().getPiece();
         Game.getSelectedTile().setChessPiece(null);
-        if (Game.getTile(destX, destY).getPiece() != null && Game.getTile(destX, destY).getPiece().getType() == ChessPiece.PieceType.KING) {
+        if (move.getStartTile().getPiece() != null && move.getDestTile().getPiece().getType() == ChessPiece.PieceType.KING) {
             // win
             AlertBox.showAlert("Game Over", "Checkmate by " + Game.getCurrentPlayer());
             return;
         }
-        Game.getTile(destX, destY).setChessPiece(piece);
+        move.getDestTile().setChessPiece(piece);
 
         if (Game.getCurrentPlayer() == Game.Player.BLACK) {
             Point whiteKing = getWhiteKing();
-            if (whiteKing != null && createMoveHelper(Game.getTile(destX, destY)).isValidMove(whiteKing.x, whiteKing.y)) {
+            if (whiteKing != null && createMoveHelper(new Move(move.getDestX(), move.getDestY(), whiteKing.x, whiteKing.y)).isValidMove()) {
                 AlertBox.showAlert("Alert", "Black player calls \"Check!\"");
             }
         } else if (Game.getCurrentPlayer() == Game.Player.WHITE) {
             Point blackKing = getBlackKing();
-            if (blackKing != null && createMoveHelper(Game.getTile(destX, destY)).isValidMove(blackKing.x, blackKing.y)) {
+            if (blackKing != null && createMoveHelper(new Move(move.getDestX(), move.getDestY(), blackKing.x, blackKing.y)).isValidMove()) {
                 AlertBox.showAlert("Alert", "White player calls \"Check!\"");
             }
         }
 
-        if (piece.getType() == ChessPiece.PieceType.PAWN && destY % 7 == 0) {
-            Game.getTile(destX, destY).setChessPiece(new ChessPiece(PawnPromotionOptionBox.chooseOption(), Game.getCurrentPlayer()));
+        if (piece.getType() == ChessPiece.PieceType.PAWN && move.getDestY() % 7 == 0) {
+            move.getDestTile().setChessPiece(new ChessPiece(PawnPromotionOptionBox.chooseOption(), Game.getCurrentPlayer()));
         }
 
         Game.deselectTile();
