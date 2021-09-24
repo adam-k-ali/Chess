@@ -47,7 +47,7 @@ public class Move {
      * @return true if the piece has moved n tiles forward; false otherwise.
      */
     public boolean movedNForward(int n) {
-        ChessPiece piece = Game.getTile(startX, startY).getPiece();
+        ChessPiece piece = Game.getPiece(startX, startY);
         return piece.getOwner() == Game.Player.BLACK && destY - startY == n || piece.getOwner() == Game.Player.WHITE && destY - startY == -n;
     }
 
@@ -139,6 +139,44 @@ public class Move {
      */
     public int getVerticalDistance() {
         return Math.abs(startY - destY);
+    }
+
+    /**
+     * Check if the piece has passed over a point
+     * @param x the x coordinate of the point
+     * @param y the y coordinate of the point
+     * @return true if the piece passed over the point; false otherwise
+     */
+    public boolean hasTraversed(int x, int y) {
+        // Knight
+        if (movedNVertical(2) && movedNHorizontal(1)) {
+            return x == startX ? isNInBound(y, startY, destY) : y == destY;
+        } else if (movedNVertical(1) && movedNHorizontal(2)) {
+            return y == startY ? isNInBound(x, startX, destX) : x == destX;
+        }
+
+        // Diagonal movements
+        if (isMoveDiagonal()) {
+            return isNInBound(x, startX, destX) && isNInBound(y, startY, destY) && Math.abs(x - startX) == Math.abs(y - startY);
+        }
+
+        // Other pieces (horizontal and vertical movements)
+        if (isMoveHorizontal()) {
+            return isNInBound(x, startX, destX);
+        }
+        if (isMoveVertical()) {
+            return isNInBound(y, startY, destY);
+        }
+
+        return false;
+    }
+
+    private boolean isNInBound(int n, int i, int j) {
+        if (i > j) {
+            return i >= n && j <= n;
+        } else {
+            return i <= n && j >= n;
+        }
     }
 
 }

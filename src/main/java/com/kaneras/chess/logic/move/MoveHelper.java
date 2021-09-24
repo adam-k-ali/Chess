@@ -2,6 +2,7 @@ package com.kaneras.chess.logic.move;
 
 import com.kaneras.chess.logic.element.ChessPiece;
 import com.kaneras.chess.logic.Game;
+import com.kaneras.chess.logic.element.PieceType;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public abstract class MoveHelper {
      * @return If the end tile is already occupied by the same player
      */
     protected boolean moveClashes() {
-        return !oppositeTeams() && move.getStartTile().getPiece() != null;
+        return !oppositeTeams() && tileOccupied(move.getStartX(), move.getStartY());
     }
 
     /**
@@ -43,7 +44,7 @@ public abstract class MoveHelper {
      * @return true if the tile is already occupied by a piece; false otherwise
      */
     protected boolean tileOccupied(int x, int y) {
-        return Game.getTile(x, y).getPiece() != null;
+        return Game.getPiece(x, y) != null;
     }
 
     /**
@@ -51,8 +52,8 @@ public abstract class MoveHelper {
      * @return true if the start and end tile are occupied by different teams; false otherwise.
      */
     protected boolean oppositeTeams() {
-        ChessPiece finishPiece = move.getDestTile().getPiece();
-        ChessPiece startPiece = move.getStartTile().getPiece();
+        ChessPiece finishPiece = Game.getPiece(move.getDestX(), move.getDestY());
+        ChessPiece startPiece = Game.getPiece(move.getStartX(), move.getStartY());
         if (startPiece != null && finishPiece == null)
             return true;
         if (startPiece == null && finishPiece != null)
@@ -117,6 +118,18 @@ public abstract class MoveHelper {
 
     protected boolean isPathObstructed() {
         return false;
+    }
+
+    public static ChessPiece checkEnPassant(Move move) {
+        List<ChessPiece> pawns = Game.getType(PieceType.PAWN, Game.getCurrentPlayer().other());
+        for (ChessPiece pawn : pawns) {
+            if (pawn.getLastMove() == null)
+                continue;
+            if (pawn.getLastMove().getDistanceMoved() == 2 && pawn.getLastMove().hasTraversed(move.getDestX(), move.getDestY())) {
+                return pawn;
+            }
+        }
+        return null;
     }
 
 

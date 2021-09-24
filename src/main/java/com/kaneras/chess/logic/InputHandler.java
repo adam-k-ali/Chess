@@ -20,6 +20,7 @@ public class InputHandler {
             int y = (int) event.getY() / Game.getTileSize();
             if (Game.getSelectedTile() != null && MoveHandler.canTileBeReoccupied(x, y)){
                 MoveHandler.performMove(new Move(Game.getSelectedTile().getX(), Game.getSelectedTile().getY(), x, y));
+//                Game.getSelectedPiece().move(x, y);
             } else {
                 Game.selectTile(x, y);
             }

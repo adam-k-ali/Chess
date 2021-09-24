@@ -28,7 +28,11 @@ public class PawnMoveHelper extends MoveHelper {
 
         // Take the opposite team's piece.
         if (move.isMoveDiagonal() && move.getDistanceMoved() == 1) {
-            return oppositeTeams() && move.getDestTile().getPiece() != null;
+            ChessPiece enPassant = checkEnPassant(move);
+            if (enPassant != null && enPassant.getCurrX() == move.getDestX()) {
+                return true;
+            }
+            return (oppositeTeams() && Game.getPiece(move.getDestX(), move.getDestY()) != null);
         }
 
         // Checks for if the pawn has moved 1 space forward.
@@ -38,7 +42,7 @@ public class PawnMoveHelper extends MoveHelper {
                 return false;
             }
 
-            return move.getDestTile().getPiece() == null;
+            return Game.getPiece(move.getDestX(), move.getDestY()) == null;
         }
 
         return false;
@@ -49,8 +53,7 @@ public class PawnMoveHelper extends MoveHelper {
      * @return true if the pawn is at the start; false otherwise
      */
     private boolean isAtStart() {
-        ChessPiece startPiece = move.getStartTile().getPiece();
-        return startPiece.getOwner() == Game.Player.WHITE && move.getStartY() == 6 || startPiece.getOwner() == Game.Player.BLACK && move.getStartY() == 1;
+        return Game.getPiece(move.getStartX(), move.getStartY()).isAtStart();
     }
 
 }

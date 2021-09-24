@@ -1,6 +1,6 @@
 package com.kaneras.chess.graphics.stages;
 
-import com.kaneras.chess.logic.element.ChessPiece;
+import com.kaneras.chess.logic.element.PieceType;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -22,7 +22,7 @@ public class PawnPromotionOptionBox {
      * Gives the player the list of resulting PieceTypes for pawn promotion
      * @return The PieceType chosen.
      */
-    public static ChessPiece.PieceType chooseOption() {
+    public static PieceType chooseOption() {
         Stage stage = new Stage();
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Pawn Promotion");
@@ -31,11 +31,11 @@ public class PawnPromotionOptionBox {
         Label label = new Label();
         label.setText("What piece do you want to replace your pawn with?");
 
-        ObservableList<ChessPiece.PieceType> options = FXCollections.observableArrayList(ChessPiece.PieceType.BISHOP,
-                ChessPiece.PieceType.KNIGHT,
-                ChessPiece.PieceType.ROOK,
-                ChessPiece.PieceType.QUEEN);
-        ComboBox<ChessPiece.PieceType> pieceTypeComboBox = new ComboBox<>(options);
+        ObservableList<PieceType> options = FXCollections.observableArrayList(PieceType.BISHOP,
+                PieceType.KNIGHT,
+                PieceType.ROOK,
+                PieceType.QUEEN);
+        ComboBox<PieceType> pieceTypeComboBox = new ComboBox<>(options);
 
         Button submitButton = new Button("Submit");
         submitButton.setOnAction(e -> stage.close());

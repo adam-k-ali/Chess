@@ -1,6 +1,7 @@
 package com.kaneras.chess.graphics;
 
 import com.kaneras.chess.logic.Game;
+import com.kaneras.chess.logic.element.ChessPiece;
 import com.kaneras.chess.logic.element.GridTile;
 import com.kaneras.chess.logic.move.*;
 import javafx.scene.canvas.GraphicsContext;
@@ -58,9 +59,10 @@ public class Screen {
             graphics.fillRect(px, py, Game.getTileSize(), Game.getTileSize());
         }
 
+        ChessPiece piece = Game.getPiece(tile.getX(), tile.getY());
         // If the tile has a piece on it, draw its sprite.
-        if (tile.getPiece() != null) {
-            drawPieceSprite(tile, px, py);
+        if (piece != null) {
+            drawPieceSprite(piece, px, py);
         }
 
         if (Game.isSelected(tile.getX(), tile.getY())) {
@@ -79,7 +81,7 @@ public class Screen {
             int finishX = Game.getHoveredTile().getX();
             int finishY = Game.getHoveredTile().getY();
 
-            if (MoveHandler.validateMove(startX, startY, finishX, finishY)) {
+            if (MoveHandler.validateMove(new Move(startX, startY, finishX, finishY))) {
                 // If the player can move the selected piece to the tile, it should be highlighted green.
                 graphics.setFill(Color.GREEN);
             } else {
@@ -96,17 +98,17 @@ public class Screen {
     /**
      * Draw the sprite of a game piece.
      * The pieces are made slightly transparent when their owner is not currently making a move.
-     * @param tile The grid tile the piece is on
+     * @param piece The chess piece to draw
      * @param px The absolute x position of the tile on screen.
      * @param py The absolute y position of the tile on screen.
      */
-    private static void drawPieceSprite(GridTile tile, int px, int py) {
-        if (Game.getCurrentPlayer() != tile.getPiece().getOwner()) {
+    private static void drawPieceSprite(ChessPiece piece, int px, int py) {
+        if (Game.getCurrentPlayer() != piece.getOwner()) {
             graphics.setGlobalAlpha(0.8);
         }
-        ImageHelper.drawImage(graphics, tile.getPiece().getSprite(), px, py, Game.getTileSize(), Game.getTileSize());
+        ImageHelper.drawImage(graphics, piece.getSprite(), px, py, Game.getTileSize(), Game.getTileSize());
 
-        if (Game.getCurrentPlayer() != tile.getPiece().getOwner()) {
+        if (Game.getCurrentPlayer() != piece.getOwner()) {
             graphics.setGlobalAlpha(1.0);
         }
     }

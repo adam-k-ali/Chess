@@ -12,8 +12,6 @@ public class GridTile {
     // The x and y position of the tile in the grid
     private final int x;
     private final int y;
-    // The chess piece on the tile
-    private ChessPiece piece;
 
     /**
      * Create a new grid tile
@@ -41,22 +39,6 @@ public class GridTile {
      */
     public int getY() {
         return y;
-    }
-
-    /**
-     * Set the chess piece on the tile
-     * @param piece The new chess piece
-     */
-    public void setChessPiece(ChessPiece piece) {
-        this.piece = piece;
-    }
-
-    /**
-     * Get the chess piece that's on the tile
-     * @return The chess piece that's on the tile (null if there isn't one on the tile)
-     */
-    public ChessPiece getPiece() {
-        return piece;
     }
 
     /**

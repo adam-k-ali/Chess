@@ -5,31 +5,28 @@ import com.kaneras.chess.graphics.stages.PawnPromotionOptionBox;
 import com.kaneras.chess.graphics.Screen;
 import com.kaneras.chess.logic.element.ChessPiece;
 import com.kaneras.chess.logic.Game;
-import com.kaneras.chess.logic.element.GridTile;
+import com.kaneras.chess.logic.element.PieceType;
 
-import java.awt.*;
+import java.util.List;
 
 /**
  * Handles all moves, allows them to be validated and executed.
  * Also performs a check for win each move.
  */
 public class MoveHandler {
+
     /**
      * Check if a move from a start tile to a finish tile is legal
-     * @param startX The start tile's x position
-     * @param startY The start tile's y position
-     * @param finishX The finish tile's x position
-     * @param finishY The finish tile's y position
+     * @param move The move to validate
      * @return true if the move is legal; false otherwise
      */
-    public static boolean validateMove(int startX, int startY, int finishX, int finishY) {
-        GridTile startTile = Game.getTile(startX, startY);
-
-        if (startTile.getPiece() == null) {
+    public static boolean validateMove(Move move) {
+        // Check there's a piece to move
+        if (Game.getPiece(move.getStartX(), move.getStartY()) == null) {
             return false;
         }
 
-        MoveHelper moveHelper = createMoveHelper(new Move(startX, startY, finishX, finishY));
+        MoveHelper moveHelper = createMoveHelper(move);
         if (moveHelper != null) {
             return moveHelper.isValidMove();
         }
@@ -43,7 +40,7 @@ public class MoveHandler {
      * @return the move helper object
      */
     public static MoveHelper createMoveHelper(Move move) {
-        switch (move.getStartTile().getPiece().getType()) {
+        switch (Game.getPiece(move.getStartX(), move.getStartY()).getType()) {
             case KING:
                 return new KingMoveHelper(move);
             case QUEEN:
@@ -69,69 +66,59 @@ public class MoveHandler {
         if (Game.getSelectedTile() == null)
             return;
 
-        if (!validateMove(move.getStartX(), move.getStartY(), move.getDestX(), move.getDestY()))
+        if (!validateMove(move))
             return;
 
-        ChessPiece piece = Game.getSelectedTile().getPiece();
-        Game.getSelectedTile().setChessPiece(null);
-        if (move.getStartTile().getPiece() != null && move.getDestTile().getPiece().getType() == ChessPiece.PieceType.KING) {
-            // win
-            AlertBox.showAlert("Game Over", "Checkmate by " + Game.getCurrentPlayer());
-            return;
-        }
-        move.getDestTile().setChessPiece(piece);
+        ChessPiece old = Game.getSelectedPiece();
 
-        if (Game.getCurrentPlayer() == Game.Player.BLACK) {
-            Point whiteKing = getWhiteKing();
-            if (whiteKing != null && createMoveHelper(new Move(move.getDestX(), move.getDestY(), whiteKing.x, whiteKing.y)).isValidMove()) {
-                AlertBox.showAlert("Alert", "Black player calls \"Check!\"");
-            }
-        } else if (Game.getCurrentPlayer() == Game.Player.WHITE) {
-            Point blackKing = getBlackKing();
-            if (blackKing != null && createMoveHelper(new Move(move.getDestX(), move.getDestY(), blackKing.x, blackKing.y)).isValidMove()) {
-                AlertBox.showAlert("Alert", "White player calls \"Check!\"");
+        Game.getSelectedPiece().move(move.getDestX(), move.getDestY());
+
+        if (old.getType() == PieceType.PAWN) {
+            ChessPiece pieceToRemove = MoveHelper.checkEnPassant(move);
+            if (pieceToRemove != null) {
+                Game.removePiece(pieceToRemove);
             }
         }
 
-        if (piece.getType() == ChessPiece.PieceType.PAWN && move.getDestY() % 7 == 0) {
-            move.getDestTile().setChessPiece(new ChessPiece(PawnPromotionOptionBox.chooseOption(), Game.getCurrentPlayer()));
-        }
+        checkForWin();
+        checkForCheck(move);
+        handlePawnPromotion(move);
 
         Game.deselectTile();
         Game.toggleCurrentPlayer();
         Screen.refresh();
     }
 
-    /**
-     * Get the position of the black king
-     * @return A point (x, y) position of the black king; null if there is no black king.
-     */
-    private static Point getBlackKing() {
-        for (int x = 0; x < 7; x++) {
-            for (int y = 0; y < 7; y++) {
-                ChessPiece piece = Game.getTile(x, y).getPiece();
-                if (piece != null && piece.getOwner() == Game.Player.BLACK && piece.getType() == ChessPiece.PieceType.KING) {
-                    return new Point(x, y);
-                }
+    private static void checkForWin() {
+        if (Game.getKing(Game.getCurrentPlayer().other()) == null) {
+            // win
+            AlertBox.showAlert("Game Over", "Checkmate by " + Game.getCurrentPlayer());
+            return;
+        }
+    }
+
+    private static void checkForCheck(Move move) {
+        if (Game.getCurrentPlayer() == Game.Player.BLACK) {
+            ChessPiece whiteKing = Game.getKing(Game.Player.WHITE);
+            if (whiteKing != null && createMoveHelper(new Move(move.getDestX(), move.getDestY(), whiteKing.getCurrX(), whiteKing.getCurrY())).isValidMove()) {
+                AlertBox.showAlert("Alert", "Black player calls \"Check!\"");
+            }
+        } else if (Game.getCurrentPlayer() == Game.Player.WHITE) {
+            ChessPiece blackKing = Game.getKing(Game.Player.BLACK);
+            if (blackKing != null && createMoveHelper(new Move(move.getDestX(), move.getDestY(), blackKing.getCurrX(), blackKing.getCurrY())).isValidMove()) {
+                AlertBox.showAlert("Alert", "White player calls \"Check!\"");
             }
         }
-        return null;
     }
 
     /**
-     * Get the position of the white king
-     * @return A point (x, y) position of the white king; null if there is no white king.
+     * Handle pawn promotion. This should happen after the move has been completed.
+     * @param move
      */
-    private static Point getWhiteKing() {
-        for (int x = 0; x < 7; x++) {
-            for (int y = 0; y < 7; y++) {
-                ChessPiece piece = Game.getTile(x, y).getPiece();
-                if (piece != null && piece.getOwner() == Game.Player.WHITE && piece.getType() == ChessPiece.PieceType.KING) {
-                    return new Point(x, y);
-                }
-            }
+    private static void handlePawnPromotion(Move move) {
+        if (Game.getPiece(move.getDestX(), move.getDestY()).getType() == PieceType.PAWN && move.getDestY() % 7 == 0) {
+            Game.getPiece(move.getDestX(), move.getDestY()).changeType(PawnPromotionOptionBox.chooseOption());
         }
-        return null;
     }
 
     /**
@@ -141,6 +128,6 @@ public class MoveHandler {
      * @return true if the piece can move here; false otherwise.
      */
     public static boolean canTileBeReoccupied(int x, int y) {
-        return Game.getTile(x, y).getPiece() == null || Game.getTile(x, y).getPiece().getOwner() != Game.getCurrentPlayer();
+        return Game.getPiece(x, y) == null || Game.getPiece(x, y).getOwner() != Game.getCurrentPlayer();
     }
 }
