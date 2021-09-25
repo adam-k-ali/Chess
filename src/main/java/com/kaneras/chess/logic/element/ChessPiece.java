@@ -72,14 +72,6 @@ public class ChessPiece {
         return owner;
     }
 
-    public int getStartX() {
-        return startX;
-    }
-
-    public int getStartY() {
-        return startY;
-    }
-
     public int getCurrX() {
         return currX;
     }
