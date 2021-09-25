@@ -125,7 +125,7 @@ public abstract class MoveHelper {
         for (ChessPiece pawn : pawns) {
             if (pawn.getLastMove() == null)
                 continue;
-            if (pawn.getLastMove().getDistanceMoved() == 2 && pawn.getLastMove().hasTraversed(move.getDestX(), move.getDestY())) {
+            if (pawn.getLastMove().getDistanceMoved() == 2 && pawn.getLastMove().hasTraversed(move.getDestX(), move.getDestY()) && MoveHandler.isLastMoved(pawn.getLastMove().getDestX(), pawn.getLastMove().getDestY())) {
                 return pawn;
             }
         }

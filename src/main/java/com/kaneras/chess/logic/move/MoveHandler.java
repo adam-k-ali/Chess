@@ -12,6 +12,8 @@ import com.kaneras.chess.logic.element.PieceType;
  * Also performs a check for win each move.
  */
 public class MoveHandler {
+    private static int lastX = -1;
+    private static int lastY = -1;
 
     /**
      * Check if a move from a start tile to a finish tile is legal
@@ -92,6 +94,9 @@ public class MoveHandler {
         }
         handlePawnPromotion(move);
 
+        lastX = move.getDestX();
+        lastY = move.getDestY();
+
         Game.deselectTile();
         Game.toggleCurrentPlayer();
         Screen.refresh();
@@ -168,5 +173,9 @@ public class MoveHandler {
      */
     public static boolean canTileBeReoccupied(int x, int y) {
         return Game.getPiece(x, y) == null || Game.getPiece(x, y).getOwner() != Game.getCurrentPlayer();
+    }
+
+    public static boolean isLastMoved(int x, int y) {
+        return lastX == x && lastY == y;
     }
 }
