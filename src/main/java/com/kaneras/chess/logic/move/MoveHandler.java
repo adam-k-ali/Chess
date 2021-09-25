@@ -81,7 +81,11 @@ public class MoveHandler {
         }
 
         checkForWin();
-        checkForCheck(move);
+        try {
+            checkAllForCheck();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         handlePawnPromotion(move);
 
         Game.deselectTile();
@@ -97,18 +101,49 @@ public class MoveHandler {
         }
     }
 
-    private static void checkForCheck(Move move) {
-        if (Game.getCurrentPlayer() == Game.Player.BLACK) {
-            ChessPiece whiteKing = Game.getKing(Game.Player.WHITE);
-            if (whiteKing != null && createMoveHelper(new Move(move.getDestX(), move.getDestY(), whiteKing.getCurrX(), whiteKing.getCurrY())).isValidMove()) {
-                AlertBox.showAlert("Alert", "Black player calls \"Check!\"");
-            }
-        } else if (Game.getCurrentPlayer() == Game.Player.WHITE) {
-            ChessPiece blackKing = Game.getKing(Game.Player.BLACK);
-            if (blackKing != null && createMoveHelper(new Move(move.getDestX(), move.getDestY(), blackKing.getCurrX(), blackKing.getCurrY())).isValidMove()) {
-                AlertBox.showAlert("Alert", "White player calls \"Check!\"");
+//    private static void checkForCheck(Move move) {
+//        if (Game.getCurrentPlayer() == Game.Player.BLACK) {
+//            ChessPiece whiteKing = Game.getKing(Game.Player.WHITE);
+//            if (whiteKing != null && createMoveHelper(new Move(move.getDestX(), move.getDestY(), whiteKing.getCurrX(), whiteKing.getCurrY())).isValidMove()) {
+//                AlertBox.showAlert("Alert", "Black player calls \"Check!\"");
+//            }
+//        } else if (Game.getCurrentPlayer() == Game.Player.WHITE) {
+//            ChessPiece blackKing = Game.getKing(Game.Player.BLACK);
+//            if (blackKing != null && createMoveHelper(new Move(move.getDestX(), move.getDestY(), blackKing.getCurrX(), blackKing.getCurrY())).isValidMove()) {
+//                AlertBox.showAlert("Alert", "White player calls \"Check!\"");
+//            }
+//        }
+//    }
+
+    private static void checkAllForCheck() throws Exception {
+        boolean[] flags = new boolean[2];
+        for (int x = 0; x < 7; x++) {
+            for (int y = 0; y < 7; y++) {
+                ChessPiece piece = Game.getPiece(x, y);
+                if (piece == null) {
+                    continue;
+                }
+
+                ChessPiece king = Game.getKing(piece.getOwner().other());
+                if (king == null) {
+                    continue;
+                }
+
+                if (flags[king.getOwner() == Game.Player.WHITE ? 0 : 1])
+                    continue;
+
+                Move move = new Move(piece.getCurrX(), piece.getCurrY(), king.getCurrX(), king.getCurrY());
+                if (validateMove(move)) {
+                    king.setCheck(true);
+                    flags[king.getOwner() == Game.Player.WHITE ? 0 : 1] = true;
+                }
             }
         }
+        if (!flags[0])
+            Game.getKing(Game.Player.WHITE).setCheck(false);
+
+        if (!flags[1])
+            Game.getKing(Game.Player.BLACK).setCheck(false);
     }
 
     /**

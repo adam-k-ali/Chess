@@ -20,4 +20,5 @@ public class KingMoveHelper extends MoveHelper {
     public boolean isValidMove() {
         return move.getDistanceMoved() == 1 && oppositeTeams();
     }
+
 }

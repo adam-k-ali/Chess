@@ -26,6 +26,9 @@ public class ChessPiece {
 
     private final Image sprite;
 
+    private boolean changed = false;
+    private boolean checked = false;
+
     /**
      * Create a new chess piece
      * @param type The type of the chess piece (e.g. PAWN)
@@ -87,6 +90,25 @@ public class ChessPiece {
 
     public void changeType(PieceType type) {
         this.type = type;
+        this.changed = true;
+    }
+
+    public boolean isChanged() {
+        return changed;
+    }
+
+    public boolean isChecked() {
+        if (this.type != PieceType.KING) {
+            return false;
+        }
+        return checked;
+    }
+
+    public void setCheck(boolean check) throws Exception {
+        if (this.type != PieceType.KING) {
+            throw new Exception("You can't check a non-king piece");
+        }
+        this.checked = check;
     }
 
     public boolean isAtStart() {

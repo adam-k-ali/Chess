@@ -3,6 +3,7 @@ package com.kaneras.chess.graphics;
 import com.kaneras.chess.logic.Game;
 import com.kaneras.chess.logic.element.ChessPiece;
 import com.kaneras.chess.logic.element.GridTile;
+import com.kaneras.chess.logic.element.PieceType;
 import com.kaneras.chess.logic.move.*;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -65,6 +66,42 @@ public class Screen {
             drawPieceSprite(piece, px, py);
         }
 
+        drawHighlight(tile, px, py);
+
+        if (piece != null && piece.getType() == PieceType.KING && piece.isChecked()) {
+            graphics.setFill(Color.BLUE);
+            graphics.fillRect(px, py, Game.getTileSize(), 5);
+            graphics.fillRect(px, py, 5, Game.getTileSize());
+            graphics.fillRect(px + Game.getTileSize() - 5, py, 5, Game.getTileSize());
+            graphics.fillRect(px, py + Game.getTileSize() - 5, Game.getTileSize(), 5);
+        }
+    }
+
+    /**
+     * Draw the sprite of a game piece.
+     * The pieces are made slightly transparent when their owner is not currently making a move.
+     * @param piece The chess piece to draw
+     * @param px The absolute x position of the tile on screen.
+     * @param py The absolute y position of the tile on screen.
+     */
+    private static void drawPieceSprite(ChessPiece piece, int px, int py) {
+        if (Game.getCurrentPlayer() != piece.getOwner()) {
+            graphics.setGlobalAlpha(0.8);
+        }
+        ImageHelper.drawImage(graphics, piece.getSprite(), px, py, Game.getTileSize(), Game.getTileSize());
+
+        if (Game.getCurrentPlayer() != piece.getOwner()) {
+            graphics.setGlobalAlpha(1.0);
+        }
+    }
+
+    /**
+     * Handle highlighting tiles when they're selected or hovered over.
+     * @param tile The tile being drawn
+     * @param px The absolute x position of the tile on screen.
+     * @param py The absolute y position of the tile on screen.
+     */
+    private static void drawHighlight(GridTile tile, int px, int py) {
         if (Game.isSelected(tile.getX(), tile.getY())) {
 
             // The selected tile should be highlighted blue
@@ -91,24 +128,6 @@ public class Screen {
 
             graphics.setGlobalAlpha(0.2);
             graphics.fillRect(px, py, Game.getTileSize(), Game.getTileSize());
-            graphics.setGlobalAlpha(1.0);
-        }
-    }
-
-    /**
-     * Draw the sprite of a game piece.
-     * The pieces are made slightly transparent when their owner is not currently making a move.
-     * @param piece The chess piece to draw
-     * @param px The absolute x position of the tile on screen.
-     * @param py The absolute y position of the tile on screen.
-     */
-    private static void drawPieceSprite(ChessPiece piece, int px, int py) {
-        if (Game.getCurrentPlayer() != piece.getOwner()) {
-            graphics.setGlobalAlpha(0.8);
-        }
-        ImageHelper.drawImage(graphics, piece.getSprite(), px, py, Game.getTileSize(), Game.getTileSize());
-
-        if (Game.getCurrentPlayer() != piece.getOwner()) {
             graphics.setGlobalAlpha(1.0);
         }
     }
