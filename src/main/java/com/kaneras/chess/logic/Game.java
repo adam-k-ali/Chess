@@ -105,7 +105,7 @@ public class Game {
         chessPieces.add(new ChessPiece(PieceType.KNIGHT, Player.BLACK, 6, 0));
         chessPieces.add(new ChessPiece(PieceType.ROOK, Player.BLACK, 7, 0));
 
-        for (int x = 0; x < 7; x++) {
+        for (int x = 0; x <= 7; x++) {
             chessPieces.add(new ChessPiece(PieceType.PAWN, Player.BLACK, x, 1));
             chessPieces.add(new ChessPiece(PieceType.PAWN, Player.WHITE, x, 6));
         }

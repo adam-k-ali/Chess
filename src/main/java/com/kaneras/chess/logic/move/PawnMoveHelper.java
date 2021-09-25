@@ -27,7 +27,7 @@ public class PawnMoveHelper extends MoveHelper {
         }
 
         // Take the opposite team's piece.
-        if (move.isMoveDiagonal() && move.getDistanceMoved() == 1 && move.movedNForward(1)) {
+        if (move.isMoveDiagonal() && move.getDistanceMoved() == 1 && move.movedNForward(1) && !move.movedNHorizontal(0)) {
             ChessPiece enPassant = checkEnPassant(move);
             if (enPassant != null && enPassant.getCurrX() == move.getDestX()) {
                 return true;

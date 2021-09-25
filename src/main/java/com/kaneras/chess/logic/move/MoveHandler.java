@@ -7,8 +7,6 @@ import com.kaneras.chess.logic.element.ChessPiece;
 import com.kaneras.chess.logic.Game;
 import com.kaneras.chess.logic.element.PieceType;
 
-import java.util.List;
-
 /**
  * Handles all moves, allows them to be validated and executed.
  * Also performs a check for win each move.
@@ -71,11 +69,17 @@ public class MoveHandler {
 
         ChessPiece old = Game.getSelectedPiece();
 
-        Game.getSelectedPiece().move(move.getDestX(), move.getDestY());
+        Game.getSelectedPiece().onMove(move.getDestX(), move.getDestY());
+
+        if (old.getType() == PieceType.KING && move.getDistanceMoved() == 2) {
+            // Handle castling
+            ChessPiece rook = Game.getPiece(move.getStartX() > move.getDestX() ? 0 : 7, move.getStartY());
+            rook.onMove((move.getStartX() + move.getDestX()) / 2, move.getStartY());
+        }
 
         if (old.getType() == PieceType.PAWN) {
             ChessPiece pieceToRemove = MoveHelper.checkEnPassant(move);
-            if (pieceToRemove != null) {
+            if (pieceToRemove != null && pieceToRemove.getCurrX() == move.getDestX()) {
                 Game.removePiece(pieceToRemove);
             }
         }

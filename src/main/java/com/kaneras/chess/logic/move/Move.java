@@ -74,7 +74,7 @@ public class Move {
      * @return true if the move was diagonal; false otherwise.
      */
     public boolean isMoveDiagonal() {
-        return Math.abs(startX - destX) == Math.abs(startY - destY);
+        return Math.abs(startX - destX) == Math.abs(startY - destY) && Math.abs(startX - destX) > 0;
     }
 
     /**

@@ -51,7 +51,12 @@ public class ChessPiece {
         this.sprite = ImageHelper.loadImage(type.toString().toLowerCase() + (owner == Game.Player.WHITE ? "_white" : ""));
     }
 
-    public void move(int destX, int destY) {
+    /**
+     * Update the chess piece when it has been moved
+     * @param destX The new x position of the piece
+     * @param destY The new y position of the piece
+     */
+    public void onMove(int destX, int destY) {
         Move move = new Move(currX, currY, destX, destY);
         if (MoveHandler.validateMove(move)) {
             history.add(move);

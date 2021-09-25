@@ -22,7 +22,14 @@ public class KingMoveHelper extends MoveHelper {
      */
     @Override
     public boolean isValidMove() {
-        return (move.getDistanceMoved() == 1 && oppositeTeams()) || canCastle();
+        if (move.getDistanceMoved() > 1) {
+            return canCastle();
+        }
+        return canMoveRegular();
+    }
+
+    private boolean canMoveRegular() {
+        return move.getDistanceMoved() == 1 && oppositeTeams();
     }
 
     private boolean canCastle() {
@@ -36,7 +43,7 @@ public class KingMoveHelper extends MoveHelper {
             return false;
         }
 
-        return move.getHorizontalDistance() == 2 && move.isMoveHorizontal() && !horizontalObstruction();
+        return move.getHorizontalDistance() == 2 && move.isMoveHorizontal() /*&& !horizontalObstruction()*/;
     }
 
     private boolean moveIntoCheck() {
