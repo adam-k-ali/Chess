@@ -4,6 +4,7 @@ import com.kaneras.chess.graphics.ImageHelper;
 import com.kaneras.chess.logic.Game;
 import com.kaneras.chess.logic.move.Move;
 import com.kaneras.chess.logic.move.MoveHandler;
+import com.kaneras.chess.logic.move.MoveResult;
 import javafx.scene.image.Image;
 
 import java.util.ArrayDeque;
@@ -58,11 +59,9 @@ public class ChessPiece {
      */
     public void onMove(int destX, int destY) {
         Move move = new Move(currX, currY, destX, destY);
-        if (MoveHandler.validateMove(move)) {
-            history.add(move);
-            currX = destX;
-            currY = destY;
-        }
+        history.add(move);
+        currX = destX;
+        currY = destY;
     }
 
     public Deque<Move> getHistory() {

@@ -21,29 +21,44 @@ public class KingMoveHelper extends MoveHelper {
      * @return true if the move is legal; false otherwise
      */
     @Override
-    public boolean isValidMove() {
+    public MoveResult isValidMove() {
         if (move.getDistanceMoved() > 1) {
             return canCastle();
         }
         return canMoveRegular();
     }
 
-    private boolean canMoveRegular() {
-        return move.getDistanceMoved() == 1 && oppositeTeams();
+    private MoveResult canMoveRegular() {
+        return (move.getDistanceMoved() == 1 && oppositeTeams()) ? MoveResult.LEGAL : MoveResult.ILLEGAL;
     }
 
-    private boolean canCastle() {
+    public MoveResult canCastle() {
         ChessPiece king = Game.getPiece(move.getStartX(), move.getStartY());
         if (king.getLastMove() != null || moveIntoCheck() || moveThroughCheck() || king.isChecked()) {
-            return false;
+            return MoveResult.ILLEGAL;
         }
 
         ChessPiece rook = Game.getPiece(move.getStartX() > move.getDestX() ? 0 : 7, move.getStartY());
         if (rook == null || rook.getType() != PieceType.ROOK || rook.getLastMove() != null) {
-            return false;
+            return MoveResult.ILLEGAL;
         }
 
-        return move.getHorizontalDistance() == 2 && move.isMoveHorizontal() /*&& !horizontalObstruction()*/;
+        if (move.getHorizontalDistance() == 2 && move.isMoveHorizontal() && !castleObstruction(king, rook))
+            return MoveResult.CASTLING;
+
+        return MoveResult.ILLEGAL;
+    }
+
+    private boolean castleObstruction(ChessPiece king, ChessPiece rook) {
+        if (moveClashes())
+            return true;
+        int dx = king.getCurrX() > rook.getCurrX() ? -1 : 1;
+        for (int i = 1; i < Math.abs(king.getCurrX() - rook.getCurrX()); i++) {
+            if (tileOccupied(king.getCurrX() + i * dx, king.getCurrY())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean moveIntoCheck() {
@@ -55,6 +70,7 @@ public class KingMoveHelper extends MoveHelper {
     }
 
     private boolean pointGivesCheck(int x, int y) {
+        ChessPiece king = Game.getPiece(move.getStartX(), move.getStartY());
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 7; j++) {
                 // Ignore the start position of the move of the king we're checking for.
@@ -65,8 +81,12 @@ public class KingMoveHelper extends MoveHelper {
                 if (piece == null)
                     continue;
 
+                if (piece.getOwner() == king.getOwner())
+                    continue;
+
+
                 Move testMove = new Move(piece.getCurrX(), piece.getCurrY(), x, y);
-                if (MoveHandler.validateMove(testMove)) {
+                if (MoveHandler.validateMove(testMove) != MoveResult.ILLEGAL) {
                     return true;
                 }
             }

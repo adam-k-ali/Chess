@@ -20,32 +20,32 @@ public class PawnMoveHelper extends MoveHelper {
      * @return true if the move is legal; false otherwise
      */
     @Override
-    public boolean isValidMove() {
+    public MoveResult isValidMove() {
         // On the first move, a pawn can move 2 spaces forward.
         if (isAtStart() && move.movedNForward(2) && move.getHorizontalDistance() == 0) {
-            return true;
+            return MoveResult.LEGAL;
         }
 
         // Take the opposite team's piece.
         if (move.isMoveDiagonal() && move.getDistanceMoved() == 1 && move.movedNForward(1) && !move.movedNHorizontal(0)) {
             ChessPiece enPassant = checkEnPassant(move);
             if (enPassant != null && enPassant.getCurrX() == move.getDestX()) {
-                return true;
+                return MoveResult.EN_PASSANT;
             }
-            return (oppositeTeams() && Game.getPiece(move.getDestX(), move.getDestY()) != null);
+            return (oppositeTeams() && Game.getPiece(move.getDestX(), move.getDestY()) != null) ? MoveResult.LEGAL : MoveResult.ILLEGAL;
         }
 
         // Checks for if the pawn has moved 1 space forward.
         if (move.movedNForward(1) && move.getHorizontalDistance() == 0) {
             // Team that moved can take piece if there is one of getTile(x, y).getPiece() the opposite team.
             if (move.isMoveDiagonal() || moveClashes()) {
-                return false;
+                return MoveResult.ILLEGAL;
             }
 
-            return Game.getPiece(move.getDestX(), move.getDestY()) == null;
+            return (Game.getPiece(move.getDestX(), move.getDestY()) == null) ? MoveResult.LEGAL : MoveResult.ILLEGAL;
         }
 
-        return false;
+        return MoveResult.ILLEGAL;
     }
 
     /**

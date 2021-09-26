@@ -118,7 +118,7 @@ public class Screen {
             int finishX = Game.getHoveredTile().getX();
             int finishY = Game.getHoveredTile().getY();
 
-            if (MoveHandler.validateMove(new Move(startX, startY, finishX, finishY))) {
+            if (MoveHandler.validateMove(new Move(startX, startY, finishX, finishY)) != MoveResult.ILLEGAL) {
                 // If the player can move the selected piece to the tile, it should be highlighted green.
                 graphics.setFill(Color.GREEN);
             } else {

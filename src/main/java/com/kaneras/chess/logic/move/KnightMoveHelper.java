@@ -17,7 +17,10 @@ public class KnightMoveHelper extends MoveHelper {
      * @return true if the move is legal; false otherwise
      */
     @Override
-    public boolean isValidMove() {
-        return (move.movedNVertical(2) && move.movedNHorizontal(1) || move.movedNVertical(1) && move.movedNHorizontal(2)) && !moveClashes();
+    public MoveResult isValidMove() {
+        if ((move.movedNVertical(2) && move.movedNHorizontal(1) || move.movedNVertical(1) && move.movedNHorizontal(2)) && !moveClashes()) {
+            return MoveResult.LEGAL;
+        }
+        return MoveResult.ILLEGAL;
     }
 }

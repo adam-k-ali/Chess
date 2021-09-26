@@ -18,8 +18,8 @@ public class BishopMoveHelper extends MoveHelper {
      * @return true if the move is legal; false otherwise
      */
     @Override
-    public boolean isValidMove() {
-        return move.isMoveDiagonal() && !isPathObstructed();
+    public MoveResult isValidMove() {
+        return (move.isMoveDiagonal() && !isPathObstructed()) ? MoveResult.LEGAL : MoveResult.ILLEGAL;
     }
 
     /**

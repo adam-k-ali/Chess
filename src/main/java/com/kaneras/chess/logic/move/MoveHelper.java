@@ -4,8 +4,6 @@ import com.kaneras.chess.logic.element.ChessPiece;
 import com.kaneras.chess.logic.Game;
 import com.kaneras.chess.logic.element.PieceType;
 
-import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,7 +25,7 @@ public abstract class MoveHelper {
      * Check if a move is legal
      * @return true if the move is legal; false otherwise
      */
-    public abstract boolean isValidMove();
+    public abstract MoveResult isValidMove();
 
     /**
      * Check if the player moves onto a tile they already occupy with another piece

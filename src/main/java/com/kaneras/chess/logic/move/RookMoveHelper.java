@@ -17,8 +17,8 @@ public class RookMoveHelper extends MoveHelper {
      * @return true if the move is legal; false otherwise
      */
     @Override
-    public boolean isValidMove() {
-        return (move.isMoveVertical() || move.isMoveHorizontal()) && !isPathObstructed();
+    public MoveResult isValidMove() {
+        return ((move.isMoveVertical() || move.isMoveHorizontal()) && !isPathObstructed()) ? MoveResult.LEGAL : MoveResult.ILLEGAL;
     }
 
     /**

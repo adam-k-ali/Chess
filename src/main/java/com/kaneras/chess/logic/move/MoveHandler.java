@@ -20,10 +20,10 @@ public class MoveHandler {
      * @param move The move to validate
      * @return true if the move is legal; false otherwise
      */
-    public static boolean validateMove(Move move) {
+    public static MoveResult validateMove(Move move) {
         // Check there's a piece to move
         if (Game.getPiece(move.getStartX(), move.getStartY()) == null) {
-            return false;
+            return MoveResult.ILLEGAL;
         }
 
         MoveHelper moveHelper = createMoveHelper(move);
@@ -31,7 +31,7 @@ public class MoveHandler {
             return moveHelper.isValidMove();
         }
 
-        return false;
+        return MoveResult.ILLEGAL;
     }
 
     /**
@@ -66,8 +66,11 @@ public class MoveHandler {
         if (Game.getSelectedTile() == null)
             return;
 
-        if (!validateMove(move))
+        MoveResult moveResult = validateMove(move);
+
+        if (moveResult == MoveResult.ILLEGAL) {
             return;
+        }
 
         ChessPiece old = Game.getSelectedPiece();
 
@@ -79,11 +82,10 @@ public class MoveHandler {
             rook.onMove((move.getStartX() + move.getDestX()) / 2, move.getStartY());
         }
 
-        if (old.getType() == PieceType.PAWN) {
-            ChessPiece pieceToRemove = MoveHelper.checkEnPassant(move);
-            if (pieceToRemove != null && pieceToRemove.getCurrX() == move.getDestX()) {
-                Game.removePiece(pieceToRemove);
-            }
+        handleEnPassant(old, move);
+
+        if (moveResult == MoveResult.CASTLING) {
+            handleCastling(move);
         }
 
         checkForWin();
@@ -102,6 +104,25 @@ public class MoveHandler {
         Screen.refresh();
     }
 
+    /**
+     * Move pieces in case of en passant
+     */
+    private static void handleEnPassant(ChessPiece oldPiece, Move move) {
+        if (oldPiece.getType() == PieceType.PAWN) {
+            ChessPiece pieceToRemove = MoveHelper.checkEnPassant(move);
+            if (pieceToRemove != null && pieceToRemove.getCurrX() == move.getDestX()) {
+                Game.removePiece(pieceToRemove);
+            }
+        }
+    }
+
+    private static void handleCastling(Move move) {
+        ChessPiece rook = Game.getPiece(move.getStartX() > move.getDestX() ? 0 : 7, move.getStartY());
+        if (rook == null)
+            return;
+        rook.onMove((move.getStartX() + move.getDestX()) / 2, move.getDestY());
+    }
+
     private static void checkForWin() {
         if (Game.getKing(Game.getCurrentPlayer().other()) == null) {
             // win
@@ -109,20 +130,6 @@ public class MoveHandler {
             return;
         }
     }
-
-//    private static void checkForCheck(Move move) {
-//        if (Game.getCurrentPlayer() == Game.Player.BLACK) {
-//            ChessPiece whiteKing = Game.getKing(Game.Player.WHITE);
-//            if (whiteKing != null && createMoveHelper(new Move(move.getDestX(), move.getDestY(), whiteKing.getCurrX(), whiteKing.getCurrY())).isValidMove()) {
-//                AlertBox.showAlert("Alert", "Black player calls \"Check!\"");
-//            }
-//        } else if (Game.getCurrentPlayer() == Game.Player.WHITE) {
-//            ChessPiece blackKing = Game.getKing(Game.Player.BLACK);
-//            if (blackKing != null && createMoveHelper(new Move(move.getDestX(), move.getDestY(), blackKing.getCurrX(), blackKing.getCurrY())).isValidMove()) {
-//                AlertBox.showAlert("Alert", "White player calls \"Check!\"");
-//            }
-//        }
-//    }
 
     private static void checkAllForCheck() throws Exception {
         boolean[] flags = new boolean[2];
@@ -142,7 +149,7 @@ public class MoveHandler {
                     continue;
 
                 Move move = new Move(piece.getCurrX(), piece.getCurrY(), king.getCurrX(), king.getCurrY());
-                if (validateMove(move)) {
+                if (validateMove(move) != MoveResult.ILLEGAL) {
                     king.setCheck(true);
                     flags[king.getOwner() == Game.Player.WHITE ? 0 : 1] = true;
                 }

@@ -17,8 +17,11 @@ public class QueenMoveHelper extends MoveHelper {
      * @return true if the move is legal; false otherwise
      */
     @Override
-    public boolean isValidMove() {
-        return (move.isMoveDiagonal() || move.isMoveHorizontal() || move.isMoveVertical()) && !isPathObstructed();
+    public MoveResult isValidMove() {
+        if ((move.isMoveDiagonal() || move.isMoveHorizontal() || move.isMoveVertical()) && !isPathObstructed()) {
+            return MoveResult.LEGAL;
+        }
+        return MoveResult.ILLEGAL;
     }
 
     /**
