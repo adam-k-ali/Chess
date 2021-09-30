@@ -1,5 +1,6 @@
 package com.kaneras.chess.logic.move;
 
+import com.kaneras.chess.logic.Board;
 import com.kaneras.chess.logic.Game;
 import com.kaneras.chess.logic.element.ChessPiece;
 
@@ -11,8 +12,8 @@ public class PawnMoveHelper extends MoveHelper {
      * Create a helper object for a move.
      * @param move The move to check
      */
-    public PawnMoveHelper(Move move) {
-        super(move);
+    public PawnMoveHelper(Move move, Board board) {
+        super(move, board);
     }
 
     /**
@@ -21,6 +22,9 @@ public class PawnMoveHelper extends MoveHelper {
      */
     @Override
     public MoveResult isValidMove() {
+        if (kingBecomesChecked()) {
+            return MoveResult.ILLEGAL;
+        }
         // On the first move, a pawn can move 2 spaces forward.
         if (isAtStart() && move.movedNForward(2) && move.getHorizontalDistance() == 0) {
             return MoveResult.LEGAL;
@@ -32,7 +36,7 @@ public class PawnMoveHelper extends MoveHelper {
             if (enPassant != null && enPassant.getCurrX() == move.getDestX()) {
                 return MoveResult.EN_PASSANT;
             }
-            return (oppositeTeams() && Game.getPiece(move.getDestX(), move.getDestY()) != null) ? MoveResult.LEGAL : MoveResult.ILLEGAL;
+            return (oppositeTeams() && board.getPiece(move.getDestX(), move.getDestY()) != null) ? MoveResult.LEGAL : MoveResult.ILLEGAL;
         }
 
         // Checks for if the pawn has moved 1 space forward.
@@ -42,7 +46,7 @@ public class PawnMoveHelper extends MoveHelper {
                 return MoveResult.ILLEGAL;
             }
 
-            return (Game.getPiece(move.getDestX(), move.getDestY()) == null) ? MoveResult.LEGAL : MoveResult.ILLEGAL;
+            return (board.getPiece(move.getDestX(), move.getDestY()) == null) ? MoveResult.LEGAL : MoveResult.ILLEGAL;
         }
 
         return MoveResult.ILLEGAL;
@@ -53,7 +57,7 @@ public class PawnMoveHelper extends MoveHelper {
      * @return true if the pawn is at the start; false otherwise
      */
     private boolean isAtStart() {
-        return Game.getPiece(move.getStartX(), move.getStartY()).isAtStart();
+        return board.getPiece(move.getStartX(), move.getStartY()).isAtStart();
     }
 
 }

@@ -60,7 +60,7 @@ public class Screen {
             graphics.fillRect(px, py, Game.getTileSize(), Game.getTileSize());
         }
 
-        ChessPiece piece = Game.getPiece(tile.getX(), tile.getY());
+        ChessPiece piece = Game.MAIN_BOARD.getPiece(tile.getX(), tile.getY());
         // If the tile has a piece on it, draw its sprite.
         if (piece != null) {
             drawPieceSprite(piece, px, py);
@@ -118,7 +118,7 @@ public class Screen {
             int finishX = Game.getHoveredTile().getX();
             int finishY = Game.getHoveredTile().getY();
 
-            if (MoveHandler.validateMove(new Move(startX, startY, finishX, finishY)) != MoveResult.ILLEGAL) {
+            if (MoveHandler.validateMove(new Move(Game.MAIN_BOARD, startX, startY, finishX, finishY), Game.MAIN_BOARD) != MoveResult.ILLEGAL) {
                 // If the player can move the selected piece to the tile, it should be highlighted green.
                 graphics.setFill(Color.GREEN);
             } else {

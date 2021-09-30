@@ -16,7 +16,7 @@ import java.util.List;
 public class Game {
     private static Canvas canvas;
     private static GridTile[][] grid = new GridTile[8][8];
-    private static List<ChessPiece> chessPieces = new ArrayList<>();
+    public static final Board MAIN_BOARD = new Board().setupDefaultBoard();
     private static int selectedX = -1;
     private static int selectedY = -1;
 
@@ -89,36 +89,8 @@ public class Game {
             }
         }
 
-        createChessPieces();
-
     }
 
-    private static void createChessPieces() {
-        chessPieces.clear();
-
-        chessPieces.add(new ChessPiece(PieceType.ROOK, Player.BLACK, 0, 0));
-        chessPieces.add(new ChessPiece(PieceType.KNIGHT, Player.BLACK, 1, 0));
-        chessPieces.add(new ChessPiece(PieceType.BISHOP, Player.BLACK, 2, 0));
-        chessPieces.add(new ChessPiece(PieceType.QUEEN, Player.BLACK, 3, 0));
-        chessPieces.add(new ChessPiece(PieceType.KING, Player.BLACK, 4, 0));
-        chessPieces.add(new ChessPiece(PieceType.BISHOP, Player.BLACK, 5, 0));
-        chessPieces.add(new ChessPiece(PieceType.KNIGHT, Player.BLACK, 6, 0));
-        chessPieces.add(new ChessPiece(PieceType.ROOK, Player.BLACK, 7, 0));
-
-        for (int x = 0; x <= 7; x++) {
-            chessPieces.add(new ChessPiece(PieceType.PAWN, Player.BLACK, x, 1));
-            chessPieces.add(new ChessPiece(PieceType.PAWN, Player.WHITE, x, 6));
-        }
-
-        chessPieces.add(new ChessPiece(PieceType.ROOK, Player.WHITE, 0, 7));
-        chessPieces.add(new ChessPiece(PieceType.KNIGHT, Player.WHITE, 1, 7));
-        chessPieces.add(new ChessPiece(PieceType.BISHOP, Player.WHITE, 2, 7));
-        chessPieces.add(new ChessPiece(PieceType.KING, Player.WHITE, 3, 7));
-        chessPieces.add(new ChessPiece(PieceType.QUEEN, Player.WHITE, 4, 7));
-        chessPieces.add(new ChessPiece(PieceType.BISHOP, Player.WHITE, 5, 7));
-        chessPieces.add(new ChessPiece(PieceType.KNIGHT, Player.WHITE, 6, 7));
-        chessPieces.add(new ChessPiece(PieceType.ROOK, Player.WHITE, 7, 7));
-    }
 
     /**
      * Selects a game tile
@@ -127,7 +99,7 @@ public class Game {
      * @param y The y position of the tile to select
      */
     public static void selectTile(int x, int y) {
-        if (getPiece(x, y) == null || getPiece(x, y).getOwner() != currentPlayer)
+        if (MAIN_BOARD.getPiece(x, y) == null || MAIN_BOARD.getPiece(x, y).getOwner() != currentPlayer)
             return;
         selectedX = x;
         selectedY = y;
@@ -207,59 +179,9 @@ public class Game {
         return currentPlayer;
     }
 
-    public static List<ChessPiece> getPlayerPieces(Player player) {
-        List<ChessPiece> pieces = new ArrayList<>();
-
-        for (ChessPiece piece : chessPieces) {
-            if (piece.getOwner() == player)
-                pieces.add(piece);
-        }
-        return pieces;
-    }
-
-    public static ChessPiece getSelectedPiece() {
-        return getPiece(selectedX, selectedY);
-    }
-
-    public static ChessPiece getPiece(int x, int y) {
-        for (ChessPiece piece : chessPieces) {
-            if (piece.getCurrX() == x && piece.getCurrY() == y)
-                return piece;
-        }
-        return null;
-    }
-
-    /**
-     * Get all chess pieces on the board of a certain type
-     * @param type The type of the chess piece
-     * @param owner The owner of the chess piece; null if all of type are wanted.
-     * @return A list of chess pieces fitting the criteria.
-     */
-    public static List<ChessPiece> getType(PieceType type, Player owner) {
-        List<ChessPiece> pieces = new ArrayList<>();
-        for (ChessPiece piece : chessPieces) {
-            if (piece.getType() == type) {
-                if (owner != null && piece.getOwner() == owner) {
-                    pieces.add(piece);
-                } else if (owner == null) {
-                    pieces.add(piece);
-                }
-            }
-        }
-        return pieces;
-    }
-
-    public static ChessPiece getKing(Player player) {
-        for (ChessPiece piece : chessPieces) {
-            if (piece.getOwner() == player && piece.getType() == PieceType.KING)
-                return piece;
-        }
-        return null;
-    }
-
-    public static void removePiece(ChessPiece piece) {
-        chessPieces.remove(piece);
-    }
+//    public static ChessPiece getSelectedPiece() {
+//        return MAIN_BOARD.getPiece(selectedX, selectedY);
+//    }
 
     public enum Player {
         WHITE, BLACK;

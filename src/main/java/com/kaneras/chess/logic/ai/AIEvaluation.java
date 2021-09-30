@@ -15,21 +15,21 @@ public class AIEvaluation {
         this.computer = computer;
     }
 
-    public int getBoardScore() {
-        return getScore(computer) + getScore(computer.other());
-    }
-
-    public int getScore(Game.Player player) {
-        List<ChessPiece> pieces = Game.getPlayerPieces(player);
-        int score = 0;
-        for (ChessPiece piece : pieces) {
-            if (player == Game.Player.WHITE) {
-                score += piece.getType().getScore();
-            } else {
-                score -= piece.getType().getScore();
-            }
-        }
-
-        return score;
-    }
+//    public int getBoardScore() {
+//        return getScore(computer) + getScore(computer.other());
+//    }
+//
+//    public int getScore(Game.Player player) {
+//        List<ChessPiece> pieces = bosard.getPlayerPieces(player);
+//        int score = 0;
+//        for (ChessPiece piece : pieces) {
+//            if (player == Game.Player.WHITE) {
+//                score += piece.getType().getScore();
+//            } else {
+//                score -= piece.getType().getScore();
+//            }
+//        }
+//
+//        return score;
+//    }
 }

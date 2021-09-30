@@ -3,6 +3,7 @@ package com.kaneras.chess.logic.move;
 import com.kaneras.chess.graphics.stages.AlertBox;
 import com.kaneras.chess.graphics.stages.PawnPromotionOptionBox;
 import com.kaneras.chess.graphics.Screen;
+import com.kaneras.chess.logic.Board;
 import com.kaneras.chess.logic.element.ChessPiece;
 import com.kaneras.chess.logic.Game;
 import com.kaneras.chess.logic.element.PieceType;
@@ -12,21 +13,23 @@ import com.kaneras.chess.logic.element.PieceType;
  * Also performs a check for win each move.
  */
 public class MoveHandler {
-    private static int lastX = -1;
-    private static int lastY = -1;
+    private final Board board;
+    public MoveHandler(Board board) {
+        this.board = board;
+    }
 
     /**
      * Check if a move from a start tile to a finish tile is legal
      * @param move The move to validate
      * @return true if the move is legal; false otherwise
      */
-    public static MoveResult validateMove(Move move) {
+    public static MoveResult validateMove(Move move, Board board) {
         // Check there's a piece to move
-        if (Game.getPiece(move.getStartX(), move.getStartY()) == null) {
+        if (board.getPiece(move.getStartX(), move.getStartY()) == null) {
             return MoveResult.ILLEGAL;
         }
 
-        MoveHelper moveHelper = createMoveHelper(move);
+        MoveHelper moveHelper = createMoveHelper(move, board);
         if (moveHelper != null) {
             return moveHelper.isValidMove();
         }
@@ -39,20 +42,20 @@ public class MoveHandler {
      * @param move The move to be checked
      * @return the move helper object
      */
-    public static MoveHelper createMoveHelper(Move move) {
-        switch (Game.getPiece(move.getStartX(), move.getStartY()).getType()) {
+    public static MoveHelper createMoveHelper(Move move, Board board) {
+        switch (board.getPiece(move.getStartX(), move.getStartY()).getType()) {
             case KING:
-                return new KingMoveHelper(move);
+                return new KingMoveHelper(move, board);
             case QUEEN:
-                return new QueenMoveHelper(move);
+                return new QueenMoveHelper(move, board);
             case BISHOP:
-                return new BishopMoveHelper(move);
+                return new BishopMoveHelper(move, board);
             case PAWN:
-                return new PawnMoveHelper(move);
+                return new PawnMoveHelper(move, board);
             case ROOK:
-                return new RookMoveHelper(move);
+                return new RookMoveHelper(move, board);
             case KNIGHT:
-                return new KnightMoveHelper(move);
+                return new KnightMoveHelper(move, board);
             default:
                 return null;
         }
@@ -62,27 +65,34 @@ public class MoveHandler {
      * Move the selected game piece to a new legal destination
      * @param move The move to be performed
      */
-    public static void performMove(Move move) {
+    public void performMove(Move move) {
         if (Game.getSelectedTile() == null)
             return;
 
-        MoveResult moveResult = validateMove(move);
+        MoveResult moveResult = validateMove(move, board);
 
         if (moveResult == MoveResult.ILLEGAL) {
             return;
         }
 
-        ChessPiece old = Game.getSelectedPiece();
+        ChessPiece old = board.getPiece(move.getStartX(), move.getStartY());
 
-        Game.getSelectedPiece().onMove(move.getDestX(), move.getDestY());
+        // Remove old piece
+        if (board.getPiece(move.getDestX(), move.getDestY()) != null) {
+            board.removePiece(move.getDestX(), move.getDestY());
+        }
+
+        board.getPiece(move.getStartX(), move.getStartY()).onMove(move.getDestX(), move.getDestY());
 
         if (old.getType() == PieceType.KING && move.getDistanceMoved() == 2) {
             // Handle castling
-            ChessPiece rook = Game.getPiece(move.getStartX() > move.getDestX() ? 0 : 7, move.getStartY());
+            ChessPiece rook = board.getPiece(move.getStartX() > move.getDestX() ? 0 : 7, move.getStartY());
             rook.onMove((move.getStartX() + move.getDestX()) / 2, move.getStartY());
         }
 
-        handleEnPassant(old, move);
+        if (moveResult == MoveResult.EN_PASSANT) {
+            handleEnPassant(move);
+        }
 
         if (moveResult == MoveResult.CASTLING) {
             handleCastling(move);
@@ -96,8 +106,7 @@ public class MoveHandler {
         }
         handlePawnPromotion(move);
 
-        lastX = move.getDestX();
-        lastY = move.getDestY();
+        board.updateLastMove(move.getDestX(), move.getDestY());
 
         Game.deselectTile();
         Game.toggleCurrentPlayer();
@@ -107,40 +116,41 @@ public class MoveHandler {
     /**
      * Move pieces in case of en passant
      */
-    private static void handleEnPassant(ChessPiece oldPiece, Move move) {
-        if (oldPiece.getType() == PieceType.PAWN) {
-            ChessPiece pieceToRemove = MoveHelper.checkEnPassant(move);
-            if (pieceToRemove != null && pieceToRemove.getCurrX() == move.getDestX()) {
-                Game.removePiece(pieceToRemove);
-            }
+    private void handleEnPassant(Move move) {
+        int x = move.getDestX();
+        int y = move.getStartY() > move.getDestY() ? move.getDestY() + 1 : move.getDestY() - 1;
+
+        ChessPiece pawn = board.getPiece(x, y);
+        if (pawn != null && pawn.getType() == PieceType.PAWN) {
+            board.removePiece(pawn.getCurrX(), pawn.getCurrY());
         }
     }
 
-    private static void handleCastling(Move move) {
-        ChessPiece rook = Game.getPiece(move.getStartX() > move.getDestX() ? 0 : 7, move.getStartY());
+    private void handleCastling(Move move) {
+        ChessPiece rook = board.getPiece(move.getStartX() > move.getDestX() ? 0 : 7, move.getStartY());
         if (rook == null)
             return;
         rook.onMove((move.getStartX() + move.getDestX()) / 2, move.getDestY());
     }
 
-    private static void checkForWin() {
-        if (Game.getKing(Game.getCurrentPlayer().other()) == null) {
+    private void checkForWin() {
+        if (board.getKing(Game.getCurrentPlayer().other()) == null) {
             // win
             AlertBox.showAlert("Game Over", "Checkmate by " + Game.getCurrentPlayer());
             return;
         }
     }
 
-    private static void checkAllForCheck() throws Exception {
+    private void checkAllForCheck() throws Exception {
         boolean[] flags = new boolean[2];
         for (int x = 0; x < 7; x++) {
             for (int y = 0; y < 7; y++) {
-                ChessPiece piece = Game.getPiece(x, y);
+                ChessPiece piece = board.getPiece(x, y);
                 if (piece == null) {
                     continue;
                 }
 
-                ChessPiece king = Game.getKing(piece.getOwner().other());
+                ChessPiece king = board.getKing(piece.getOwner().other());
                 if (king == null) {
                     continue;
                 }
@@ -148,27 +158,27 @@ public class MoveHandler {
                 if (flags[king.getOwner() == Game.Player.WHITE ? 0 : 1])
                     continue;
 
-                Move move = new Move(piece.getCurrX(), piece.getCurrY(), king.getCurrX(), king.getCurrY());
-                if (validateMove(move) != MoveResult.ILLEGAL) {
+                Move move = new Move(board, piece.getCurrX(), piece.getCurrY(), king.getCurrX(), king.getCurrY());
+                if (validateMove(move, board) != MoveResult.ILLEGAL) {
                     king.setCheck(true);
                     flags[king.getOwner() == Game.Player.WHITE ? 0 : 1] = true;
                 }
             }
         }
         if (!flags[0])
-            Game.getKing(Game.Player.WHITE).setCheck(false);
+            board.getKing(Game.Player.WHITE).setCheck(false);
 
         if (!flags[1])
-            Game.getKing(Game.Player.BLACK).setCheck(false);
+            board.getKing(Game.Player.BLACK).setCheck(false);
     }
 
     /**
      * Handle pawn promotion. This should happen after the move has been completed.
      * @param move
      */
-    private static void handlePawnPromotion(Move move) {
-        if (Game.getPiece(move.getDestX(), move.getDestY()).getType() == PieceType.PAWN && move.getDestY() % 7 == 0) {
-            Game.getPiece(move.getDestX(), move.getDestY()).changeType(PawnPromotionOptionBox.chooseOption());
+    private void handlePawnPromotion(Move move) {
+        if (board.getPiece(move.getDestX(), move.getDestY()).getType() == PieceType.PAWN && move.getDestY() % 7 == 0) {
+            board.getPiece(move.getDestX(), move.getDestY()).changeType(PawnPromotionOptionBox.chooseOption());
         }
     }
 
@@ -178,11 +188,7 @@ public class MoveHandler {
      * @param y The new y position
      * @return true if the piece can move here; false otherwise.
      */
-    public static boolean canTileBeReoccupied(int x, int y) {
-        return Game.getPiece(x, y) == null || Game.getPiece(x, y).getOwner() != Game.getCurrentPlayer();
-    }
-
-    public static boolean isLastMoved(int x, int y) {
-        return lastX == x && lastY == y;
+    public boolean canTileBeReoccupied(int x, int y) {
+        return board.getPiece(x, y) == null || board.getPiece(x, y).getOwner() != Game.getCurrentPlayer();
     }
 }

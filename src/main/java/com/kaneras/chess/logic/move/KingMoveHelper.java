@@ -1,5 +1,6 @@
 package com.kaneras.chess.logic.move;
 
+import com.kaneras.chess.logic.Board;
 import com.kaneras.chess.logic.Game;
 import com.kaneras.chess.logic.element.ChessPiece;
 import com.kaneras.chess.logic.element.PieceType;
@@ -12,8 +13,8 @@ public class KingMoveHelper extends MoveHelper {
      * Create a helper object for a move.
      * @param move The move to check
      */
-    public KingMoveHelper(Move move) {
-        super(move);
+    public KingMoveHelper(Move move, Board board) {
+        super(move, board);
     }
 
     /**
@@ -29,16 +30,18 @@ public class KingMoveHelper extends MoveHelper {
     }
 
     private MoveResult canMoveRegular() {
+        if (moveIntoCheck())
+            return MoveResult.ILLEGAL;
         return (move.getDistanceMoved() == 1 && oppositeTeams()) ? MoveResult.LEGAL : MoveResult.ILLEGAL;
     }
 
     public MoveResult canCastle() {
-        ChessPiece king = Game.getPiece(move.getStartX(), move.getStartY());
+        ChessPiece king = board.getPiece(move.getStartX(), move.getStartY());
         if (king.getLastMove() != null || moveIntoCheck() || moveThroughCheck() || king.isChecked()) {
             return MoveResult.ILLEGAL;
         }
 
-        ChessPiece rook = Game.getPiece(move.getStartX() > move.getDestX() ? 0 : 7, move.getStartY());
+        ChessPiece rook = board.getPiece(move.getStartX() > move.getDestX() ? 0 : 7, move.getStartY());
         if (rook == null || rook.getType() != PieceType.ROOK || rook.getLastMove() != null) {
             return MoveResult.ILLEGAL;
         }
@@ -70,23 +73,22 @@ public class KingMoveHelper extends MoveHelper {
     }
 
     private boolean pointGivesCheck(int x, int y) {
-        ChessPiece king = Game.getPiece(move.getStartX(), move.getStartY());
+        ChessPiece king = board.getPiece(move.getStartX(), move.getStartY());
         for (int i = 0; i < 7; i++) {
             for (int j = 0; j < 7; j++) {
                 // Ignore the start position of the move of the king we're checking for.
                 if (i == move.getStartX() && j == move.getStartY())
                     continue;
 
-                ChessPiece piece = Game.getPiece(i, j);
+                ChessPiece piece = board.getPiece(i, j);
                 if (piece == null)
                     continue;
 
                 if (piece.getOwner() == king.getOwner())
                     continue;
 
-
-                Move testMove = new Move(piece.getCurrX(), piece.getCurrY(), x, y);
-                if (MoveHandler.validateMove(testMove) != MoveResult.ILLEGAL) {
+                Move testMove = new Move(board, piece.getCurrX(), piece.getCurrY(), x, y);
+                if (MoveHandler.validateMove(testMove, board) != MoveResult.ILLEGAL) {
                     return true;
                 }
             }

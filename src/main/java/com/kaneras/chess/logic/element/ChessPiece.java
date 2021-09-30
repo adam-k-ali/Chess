@@ -1,10 +1,9 @@
 package com.kaneras.chess.logic.element;
 
 import com.kaneras.chess.graphics.ImageHelper;
+import com.kaneras.chess.logic.Board;
 import com.kaneras.chess.logic.Game;
 import com.kaneras.chess.logic.move.Move;
-import com.kaneras.chess.logic.move.MoveHandler;
-import com.kaneras.chess.logic.move.MoveResult;
 import javafx.scene.image.Image;
 
 import java.util.ArrayDeque;
@@ -30,14 +29,17 @@ public class ChessPiece {
     private boolean changed = false;
     private boolean checked = false;
 
+    private final Board board;
+
     /**
      * Create a new chess piece
+     * @param board The board this chess piece is on
      * @param type The type of the chess piece (e.g. PAWN)
      * @param owner The owner of the chess piece (WHITE or BLACK)
      * @param startX The starting x position of the piece
      * @param startY The starting y position of the piece
      */
-    public ChessPiece(PieceType type, Game.Player owner, int startX, int startY) {
+    public ChessPiece(Board board, PieceType type, Game.Player owner, int startX, int startY) {
         this.history = new ArrayDeque<>();
 
         this.type = type;
@@ -50,6 +52,8 @@ public class ChessPiece {
         this.currY = startY;
 
         this.sprite = ImageHelper.loadImage(type.toString().toLowerCase() + (owner == Game.Player.WHITE ? "_white" : ""));
+
+        this.board = board;
     }
 
     /**
@@ -58,7 +62,7 @@ public class ChessPiece {
      * @param destY The new y position of the piece
      */
     public void onMove(int destX, int destY) {
-        Move move = new Move(currX, currY, destX, destY);
+        Move move = new Move(board, currX, currY, destX, destY);
         history.add(move);
         currX = destX;
         currY = destY;
@@ -74,6 +78,14 @@ public class ChessPiece {
 
     public Game.Player getOwner() {
         return owner;
+    }
+
+    public int getStartX() {
+        return startX;
+    }
+
+    public int getStartY() {
+        return startY;
     }
 
     public int getCurrX() {

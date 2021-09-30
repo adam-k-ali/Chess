@@ -1,16 +1,18 @@
 package com.kaneras.chess.logic.move;
 
+import com.kaneras.chess.logic.Board;
 import com.kaneras.chess.logic.Game;
 import com.kaneras.chess.logic.element.ChessPiece;
-import com.kaneras.chess.logic.element.GridTile;
 
 public class Move {
     private final int startX;
     private final int startY;
     private final int destX;
     private final int destY;
+    private final Board board;
 
-    public Move(int startX, int startY, int destX, int destY) {
+    public Move(Board board, int startX, int startY, int destX, int destY) {
+        this.board = board;
         this.startX = startX;
         this.startY = startY;
         this.destX = destX;
@@ -33,21 +35,13 @@ public class Move {
         return destY;
     }
 
-    public GridTile getStartTile() {
-        return Game.getTile(startX, startY);
-    }
-
-    public GridTile getDestTile() {
-        return Game.getTile(destX, destY);
-    }
-
     /**
      * Check if a piece is moving n tiles forward
      * @param n the number of tiles moved
      * @return true if the piece has moved n tiles forward; false otherwise.
      */
     public boolean movedNForward(int n) {
-        ChessPiece piece = Game.getPiece(startX, startY);
+        ChessPiece piece = board.getPiece(startX, startY);
         return piece.getOwner() == Game.Player.BLACK && destY - startY == n || piece.getOwner() == Game.Player.WHITE && destY - startY == -n;
     }
 
@@ -177,6 +171,10 @@ public class Move {
         } else {
             return i <= n && j >= n;
         }
+    }
+
+    public ChessPiece getStartPiece() {
+        return board.getPiece(getStartX(), getStartY());
     }
 
 }

@@ -18,8 +18,9 @@ public class InputHandler {
         if (event.getButton() == MouseButton.PRIMARY) {
             int x = (int) event.getX() / Game.getTileSize();
             int y = (int) event.getY() / Game.getTileSize();
-            if (Game.getSelectedTile() != null && MoveHandler.canTileBeReoccupied(x, y)){
-                MoveHandler.performMove(new Move(Game.getSelectedTile().getX(), Game.getSelectedTile().getY(), x, y));
+            MoveHandler moveHandler = new MoveHandler(Game.MAIN_BOARD);
+            if (Game.getSelectedTile() != null && moveHandler.canTileBeReoccupied(x, y)) {
+                moveHandler.performMove(new Move(Game.MAIN_BOARD, Game.getSelectedTile().getX(), Game.getSelectedTile().getY(), x, y));
 //                Game.getSelectedPiece().move(x, y);
             } else {
                 Game.selectTile(x, y);

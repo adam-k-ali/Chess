@@ -1,5 +1,7 @@
 package com.kaneras.chess.logic.move;
 
+import com.kaneras.chess.logic.Board;
+
 /**
  * Helper class for moves of rooks
  */
@@ -8,8 +10,8 @@ public class RookMoveHelper extends MoveHelper {
      * Create a helper object for a move.
      * @param move The move to check
      */
-    public RookMoveHelper(Move move) {
-        super(move);
+    public RookMoveHelper(Move move, Board board) {
+        super(move, board);
     }
 
     /**
@@ -18,7 +20,7 @@ public class RookMoveHelper extends MoveHelper {
      */
     @Override
     public MoveResult isValidMove() {
-        return ((move.isMoveVertical() || move.isMoveHorizontal()) && !isPathObstructed()) ? MoveResult.LEGAL : MoveResult.ILLEGAL;
+        return ((move.isMoveVertical() || move.isMoveHorizontal()) && !isPathObstructed() && !kingBecomesChecked()) ? MoveResult.LEGAL : MoveResult.ILLEGAL;
     }
 
     /**

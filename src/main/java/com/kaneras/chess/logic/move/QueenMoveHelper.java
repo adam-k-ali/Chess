@@ -1,5 +1,7 @@
 package com.kaneras.chess.logic.move;
 
+import com.kaneras.chess.logic.Board;
+
 /**
  * Helper class for moves of queens
  */
@@ -8,8 +10,8 @@ public class QueenMoveHelper extends MoveHelper {
      * Create a helper object for a move.
      * @param move The move to check
      */
-    public QueenMoveHelper(Move move) {
-        super(move);
+    public QueenMoveHelper(Move move, Board board) {
+        super(move, board);
     }
 
     /**
@@ -18,7 +20,7 @@ public class QueenMoveHelper extends MoveHelper {
      */
     @Override
     public MoveResult isValidMove() {
-        if ((move.isMoveDiagonal() || move.isMoveHorizontal() || move.isMoveVertical()) && !isPathObstructed()) {
+        if ((move.isMoveDiagonal() || move.isMoveHorizontal() || move.isMoveVertical()) && !isPathObstructed() && !kingBecomesChecked()) {
             return MoveResult.LEGAL;
         }
         return MoveResult.ILLEGAL;
